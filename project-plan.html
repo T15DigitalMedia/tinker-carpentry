@@ -1,0 +1,973 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Carpentry Webstore — Build Plan · A-001</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600;9..144,700&family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans:wght@400;450;500;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --paper:#E7E3D7;
+    --paper-2:#DED9CB;
+    --panel:#F1EEE5;
+    --ink:#182634;
+    --ink-2:#42546A;
+    --ink-3:#6C7A88;
+    --line:#C2BBA9;
+    --line-strong:#A69E8A;
+    --walnut:#7C4A22;
+    --walnut-2:#9A6132;
+    --cover:#152230;
+    --ok:#3D6A4E;
+    --open:#A9711A;
+    --focus:#B5793A;
+    --radius:3px;
+    --maxw:1080px;
+    --mono:'IBM Plex Mono',ui-monospace,monospace;
+    --sans:'IBM Plex Sans',system-ui,sans-serif;
+    --serif:'Fraunces',Georgia,serif;
+  }
+
+  *{box-sizing:border-box;}
+  html{scroll-behavior:smooth;scroll-padding-top:64px;}
+  @media (prefers-reduced-motion:reduce){html{scroll-behavior:auto;}}
+  body{
+    margin:0;
+    font-family:var(--sans);
+    background:var(--paper);
+    color:var(--ink);
+    font-size:16px;
+    line-height:1.6;
+    -webkit-font-smoothing:antialiased;
+  }
+  a{color:inherit;}
+
+  /* ---------- COVER ---------- */
+  .cover{
+    position:relative;
+    background:var(--cover);
+    color:var(--paper);
+    padding:64px 32px 40px;
+    overflow:hidden;
+    border-bottom:2px solid var(--ink);
+  }
+  .cover::before{
+    content:"";
+    position:absolute;inset:0;
+    background-image:
+      linear-gradient(rgba(255,255,255,.05) 1px,transparent 1px),
+      linear-gradient(90deg,rgba(255,255,255,.05) 1px,transparent 1px);
+    background-size:32px 32px;
+    pointer-events:none;
+  }
+  .cover-inner{position:relative;max-width:var(--maxw);margin:0 auto;}
+  .cover-eyebrow{
+    font-family:var(--mono);
+    font-size:12px;letter-spacing:.28em;text-transform:uppercase;
+    color:#9FB0BF;
+    display:flex;gap:14px;align-items:center;flex-wrap:wrap;
+    margin-bottom:28px;
+  }
+  .cover-eyebrow .dot{width:5px;height:5px;background:var(--walnut-2);border-radius:50%;}
+  .cover h1{
+    font-family:var(--serif);
+    font-weight:500;
+    font-optical-sizing:auto;
+    font-size:clamp(2.6rem,7vw,5.3rem);
+    line-height:.98;
+    margin:0 0 10px;
+    letter-spacing:-.015em;
+  }
+  .cover h1 em{font-style:italic;color:#E9C9A6;font-weight:400;}
+  .cover-sub{
+    max-width:56ch;color:#C4CFD8;font-size:1.05rem;margin:0 0 44px;
+  }
+  /* title block — the engineering drawing corner block */
+  .titleblock{
+    border:1.5px solid var(--line-strong);
+    display:grid;
+    grid-template-columns:2.4fr 1fr 1fr .8fr;
+    background:rgba(255,255,255,.02);
+    max-width:760px;
+  }
+  .tb-cell{
+    border-right:1px solid rgba(255,255,255,.16);
+    border-top:1px solid rgba(255,255,255,.16);
+    padding:11px 14px;
+  }
+  .tb-cell:nth-child(-n+4){border-top:none;}
+  .tb-cell:last-child,.tb-cell.edge{border-right:none;}
+  .tb-k{font-family:var(--mono);font-size:10px;letter-spacing:.18em;text-transform:uppercase;color:#8FA0AF;margin-bottom:3px;}
+  .tb-v{font-family:var(--mono);font-size:13px;color:var(--paper);}
+  .tb-v.big{font-family:var(--serif);font-size:16px;letter-spacing:0;}
+  .tb-span2{grid-column:span 2;}
+
+  /* ---------- STICKY NAV ---------- */
+  .topnav{
+    position:sticky;top:0;z-index:40;
+    background:rgba(231,227,215,.92);
+    backdrop-filter:blur(8px);
+    border-bottom:1px solid var(--line);
+  }
+  .topnav-inner{
+    max-width:var(--maxw);margin:0 auto;
+    display:flex;align-items:center;gap:4px;
+    padding:0 20px;height:56px;overflow-x:auto;
+  }
+  .topnav-brand{
+    font-family:var(--mono);font-size:12px;letter-spacing:.14em;
+    text-transform:uppercase;color:var(--ink);font-weight:600;
+    white-space:nowrap;margin-right:14px;
+  }
+  .topnav a{
+    font-family:var(--mono);font-size:11.5px;letter-spacing:.08em;
+    text-transform:uppercase;text-decoration:none;color:var(--ink-3);
+    padding:6px 10px;border-radius:var(--radius);white-space:nowrap;
+    transition:color .15s,background .15s;
+  }
+  .topnav a:hover{color:var(--ink);background:var(--paper-2);}
+  .topnav a.active{color:var(--walnut);background:var(--paper-2);}
+
+  /* ---------- LAYOUT ---------- */
+  main{max-width:var(--maxw);margin:0 auto;padding:0 20px 80px;}
+  .section{padding:64px 0 12px;scroll-margin-top:64px;}
+  .sec-head{margin-bottom:34px;}
+  .sec-eyebrow{
+    font-family:var(--mono);font-size:12px;letter-spacing:.22em;
+    text-transform:uppercase;color:var(--walnut);
+    display:flex;align-items:center;gap:12px;margin-bottom:12px;
+  }
+  .sec-eyebrow .num{
+    border:1px solid var(--line-strong);border-radius:2px;
+    padding:1px 7px;color:var(--ink-2);font-weight:500;
+  }
+  .section h2{
+    font-family:var(--serif);font-weight:500;font-optical-sizing:auto;
+    font-size:clamp(1.9rem,4vw,2.9rem);line-height:1.02;
+    letter-spacing:-.015em;margin:0 0 10px;
+  }
+  .section .lede{color:var(--ink-2);max-width:66ch;margin:0;font-size:1.03rem;}
+
+  /* dimension-line divider — signature device */
+  .dim{
+    display:flex;align-items:center;gap:0;margin:8px 0 0;
+    color:var(--line-strong);
+    --tick:9px;
+  }
+  .dim .end{width:1px;height:var(--tick);background:var(--line-strong);}
+  .dim .rule{flex:1;height:1px;background:var(--line-strong);}
+  .dim .label{
+    font-family:var(--mono);font-size:10px;letter-spacing:.2em;
+    text-transform:uppercase;color:var(--ink-3);
+    padding:0 12px;white-space:nowrap;
+  }
+
+  /* ---------- OVERVIEW ---------- */
+  .scope-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-top:8px;}
+  .scope-card{
+    background:var(--panel);border:1px solid var(--line);border-radius:var(--radius);
+    padding:22px 24px;
+  }
+  .scope-card h3{
+    font-family:var(--mono);font-size:12px;letter-spacing:.16em;text-transform:uppercase;
+    margin:0 0 14px;color:var(--walnut);font-weight:600;
+    display:flex;align-items:center;gap:8px;
+  }
+  .scope-card ul{margin:0;padding:0;list-style:none;}
+  .scope-card li{
+    padding:6px 0 6px 20px;position:relative;font-size:.95rem;color:var(--ink);
+    border-top:1px dotted var(--line);
+  }
+  .scope-card li:first-child{border-top:none;}
+  .scope-card li::before{
+    content:"";position:absolute;left:2px;top:14px;width:7px;height:7px;
+    border:1px solid var(--walnut);transform:rotate(45deg);
+  }
+  .scope-card.out li::before{border-color:var(--ink-3);opacity:.5;}
+
+  /* ---------- DECISION TABLE ---------- */
+  .dtable{width:100%;border-collapse:collapse;margin-top:8px;font-size:.93rem;}
+  .dtable th{
+    text-align:left;font-family:var(--mono);font-size:10.5px;letter-spacing:.16em;
+    text-transform:uppercase;color:var(--ink-3);font-weight:600;
+    padding:0 12px 10px;border-bottom:1.5px solid var(--line-strong);
+  }
+  .dtable td{padding:14px 12px;border-bottom:1px solid var(--line);vertical-align:top;}
+  .dtable td.k{font-weight:600;width:22%;color:var(--ink);}
+  .dtable td.v{color:var(--ink-2);}
+  .dtable tr:last-child td{border-bottom:none;}
+  .pill{
+    display:inline-block;font-family:var(--mono);font-size:10px;letter-spacing:.1em;
+    text-transform:uppercase;padding:3px 9px;border-radius:2px;font-weight:600;
+    white-space:nowrap;
+  }
+  .pill.decided{background:rgba(61,106,78,.14);color:var(--ok);border:1px solid rgba(61,106,78,.35);}
+  .pill.rec{background:rgba(124,74,34,.12);color:var(--walnut);border:1px solid rgba(124,74,34,.32);}
+  .pill.open{background:rgba(169,113,26,.14);color:var(--open);border:1px solid rgba(169,113,26,.38);}
+
+  /* ---------- DATA MODEL ---------- */
+  .schema-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-top:8px;}
+  .table-card{
+    background:var(--panel);border:1px solid var(--line);border-radius:var(--radius);
+    overflow:hidden;
+  }
+  .table-card h4{
+    margin:0;font-family:var(--mono);font-size:12px;letter-spacing:.1em;
+    background:var(--ink);color:var(--paper);padding:9px 14px;font-weight:600;
+    display:flex;justify-content:space-between;align-items:center;
+  }
+  .table-card h4 span{color:#93A3B2;font-size:10px;letter-spacing:.14em;}
+  .table-card ul{margin:0;padding:8px 0;list-style:none;}
+  .table-card li{
+    font-family:var(--mono);font-size:11.5px;color:var(--ink-2);
+    padding:3px 14px;display:flex;justify-content:space-between;gap:10px;
+  }
+  .table-card li .type{color:var(--ink-3);}
+  .table-card li .pk{color:var(--walnut);font-weight:600;}
+
+  /* ---------- USER STORIES ---------- */
+  .stories{display:grid;grid-template-columns:1fr 1fr;gap:24px;margin-top:8px;}
+  .persona{}
+  .persona-tag{
+    font-family:var(--mono);font-size:11px;letter-spacing:.18em;text-transform:uppercase;
+    color:var(--paper);background:var(--walnut);display:inline-block;
+    padding:5px 12px;border-radius:2px;margin-bottom:16px;font-weight:600;
+  }
+  .persona-tag.admin{background:var(--ink);}
+  .story{
+    display:flex;gap:12px;padding:11px 0;border-top:1px solid var(--line);
+    font-size:.94rem;
+  }
+  .story:first-of-type{border-top:none;}
+  .story .id{
+    font-family:var(--mono);font-size:10px;color:var(--ink-3);
+    padding-top:3px;white-space:nowrap;letter-spacing:.06em;
+  }
+  .story .s{color:var(--ink);}
+  .story .s b{font-weight:600;}
+
+  /* ---------- FLOWS ---------- */
+  .flow{
+    background:var(--panel);border:1px solid var(--line);border-radius:var(--radius);
+    padding:22px 24px;margin-bottom:14px;
+  }
+  .flow-head{
+    display:flex;align-items:baseline;gap:12px;margin-bottom:16px;flex-wrap:wrap;
+  }
+  .flow-head .fnum{
+    font-family:var(--serif);font-size:1.7rem;color:var(--walnut);line-height:1;font-weight:600;
+  }
+  .flow-head h3{margin:0;font-family:var(--serif);font-size:1.25rem;font-weight:500;}
+  .flow-head .critical{
+    font-family:var(--mono);font-size:9.5px;letter-spacing:.14em;text-transform:uppercase;
+    border:1px solid var(--open);color:var(--open);padding:2px 7px;border-radius:2px;
+  }
+  .flow-steps{list-style:none;margin:0;padding:0;counter-reset:step;}
+  .flow-steps li{
+    position:relative;padding:8px 0 8px 42px;font-size:.93rem;color:var(--ink-2);
+    border-top:1px dotted var(--line);
+  }
+  .flow-steps li:first-child{border-top:none;}
+  .flow-steps li::before{
+    counter-increment:step;content:counter(step,decimal-leading-zero);
+    position:absolute;left:0;top:8px;font-family:var(--mono);font-size:11px;
+    color:var(--walnut);font-weight:600;
+  }
+  .flow-steps li b{color:var(--ink);font-weight:600;}
+  .flow-note{
+    margin-top:14px;padding:10px 14px;background:rgba(169,113,26,.09);
+    border-left:2px solid var(--open);font-size:.86rem;color:var(--ink-2);
+    font-family:var(--sans);
+  }
+  .flow-note b{font-family:var(--mono);font-size:10px;letter-spacing:.12em;text-transform:uppercase;color:var(--open);}
+
+  /* ---------- PHASES ---------- */
+  .phase{
+    border:1px solid var(--line);border-radius:var(--radius);background:var(--panel);
+    margin-bottom:16px;overflow:hidden;
+  }
+  .phase-bar{
+    display:flex;align-items:center;gap:18px;padding:18px 22px;
+    background:var(--paper-2);border-bottom:1px solid var(--line);cursor:pointer;
+  }
+  .phase-bar .pn{
+    font-family:var(--serif);font-size:2.1rem;font-weight:600;color:var(--walnut);
+    line-height:1;width:44px;text-align:center;flex-shrink:0;
+  }
+  .phase-meta{flex:1;min-width:0;}
+  .phase-meta h3{margin:0 0 3px;font-family:var(--serif);font-size:1.3rem;font-weight:500;}
+  .phase-meta p{margin:0;font-size:.86rem;color:var(--ink-2);}
+  .phase-prog{
+    font-family:var(--mono);font-size:11px;color:var(--ink-3);text-align:right;
+    flex-shrink:0;letter-spacing:.05em;
+  }
+  .phase-prog .bar{
+    width:88px;height:4px;background:var(--line);border-radius:3px;margin-top:6px;overflow:hidden;
+  }
+  .phase-prog .bar i{display:block;height:100%;width:0;background:var(--walnut);transition:width .3s;}
+  .phase-body{padding:8px 22px 18px;}
+  .exit{
+    font-family:var(--mono);font-size:11px;letter-spacing:.06em;color:var(--ink-3);
+    padding:12px 0 4px;border-top:1px dotted var(--line);margin-top:6px;
+  }
+  .exit b{color:var(--ok);letter-spacing:.14em;text-transform:uppercase;font-size:10px;}
+  .task{
+    display:flex;gap:12px;align-items:flex-start;padding:8px 0;
+    border-top:1px dotted var(--line);
+  }
+  .task:first-child{border-top:none;}
+  .task input{
+    appearance:none;-webkit-appearance:none;margin:2px 0 0;flex-shrink:0;
+    width:16px;height:16px;border:1.5px solid var(--line-strong);border-radius:2px;
+    background:var(--paper);cursor:pointer;position:relative;transition:.15s;
+  }
+  .task input:checked{background:var(--walnut);border-color:var(--walnut);}
+  .task input:checked::after{
+    content:"";position:absolute;left:4.5px;top:1px;width:4px;height:8px;
+    border:solid var(--paper);border-width:0 2px 2px 0;transform:rotate(45deg);
+  }
+  .task input:focus-visible{outline:2px solid var(--focus);outline-offset:2px;}
+  .task label{font-size:.93rem;color:var(--ink);cursor:pointer;line-height:1.5;}
+  .task input:checked + label{color:var(--ink-3);text-decoration:line-through;text-decoration-color:var(--line-strong);}
+  .task label .tag{
+    font-family:var(--mono);font-size:9.5px;letter-spacing:.08em;text-transform:uppercase;
+    color:var(--ink-3);border:1px solid var(--line);padding:1px 6px;border-radius:2px;margin-left:6px;
+  }
+
+  /* ---------- PARKING LOT / RISKS ---------- */
+  .two-col{display:grid;grid-template-columns:1fr 1fr;gap:24px;margin-top:8px;}
+  .qlist{list-style:none;margin:0;padding:0;}
+  .qlist li{
+    padding:13px 0 13px 30px;border-top:1px solid var(--line);position:relative;font-size:.94rem;
+  }
+  .qlist li:first-child{border-top:none;}
+  .qlist li::before{
+    content:"?";position:absolute;left:0;top:12px;font-family:var(--serif);font-weight:600;
+    color:var(--open);font-size:1.1rem;
+  }
+  .qlist.risk li::before{content:"!";color:var(--walnut);}
+  .qlist.resolved li::before{content:"";width:8px;height:8px;border:solid var(--ok);border-width:0 2px 2px 0;transform:rotate(45deg);top:15px;left:2px;font-size:0;}
+  .qlist li .ans{color:var(--ok);font-weight:600;}
+  .openbox{
+    background:rgba(169,113,26,.1);border:1px solid rgba(169,113,26,.4);border-radius:var(--radius);
+    padding:14px 16px 14px 40px;position:relative;margin-bottom:18px;
+  }
+  .openbox::before{content:"?";position:absolute;left:15px;top:11px;font-family:var(--serif);font-weight:600;color:var(--open);font-size:1.2rem;}
+  .openbox b{display:block;font-weight:600;margin-bottom:2px;}
+  .openbox span{color:var(--ink-2);font-size:.88rem;}
+  .qlist li b{display:block;font-weight:600;margin-bottom:2px;}
+  .qlist li span{color:var(--ink-2);font-size:.88rem;}
+
+  /* ---------- FOOTER ---------- */
+  footer{
+    border-top:2px solid var(--ink);background:var(--cover);color:#B9C4CD;
+    padding:36px 20px;
+  }
+  .foot-inner{
+    max-width:var(--maxw);margin:0 auto;display:flex;justify-content:space-between;
+    gap:20px;flex-wrap:wrap;font-family:var(--mono);font-size:11px;letter-spacing:.1em;
+    text-transform:uppercase;
+  }
+  .foot-inner .rev{color:#E9C9A6;}
+
+  /* ---------- RESPONSIVE ---------- */
+  @media (max-width:820px){
+    .scope-grid,.stories,.two-col{grid-template-columns:1fr;}
+    .schema-grid{grid-template-columns:1fr 1fr;}
+    .titleblock{grid-template-columns:1fr 1fr;}
+    .tb-cell:nth-child(-n+4){border-top:1px solid rgba(255,255,255,.16);}
+    .tb-cell:nth-child(-n+2){border-top:none;}
+    .phase-prog .bar{display:none;}
+  }
+  @media (max-width:520px){
+    .schema-grid{grid-template-columns:1fr;}
+    .cover{padding:44px 20px 32px;}
+    .phase-bar{gap:12px;padding:14px 16px;}
+    .phase-bar .pn{font-size:1.6rem;width:30px;}
+    .phase-body{padding:8px 16px 16px;}
+  }
+</style>
+</head>
+<body>
+
+<!-- ============ COVER ============ -->
+<header class="cover">
+  <div class="cover-inner">
+    <div class="cover-eyebrow">
+      <span>Project Plan</span><span class="dot"></span>
+      <span>Rev E · Hosting Decided: Vercel</span><span class="dot"></span>
+      <span>Not for construction</span>
+    </div>
+    <h1>Homemade Carpentry<br><em>Webstore</em> — Build Plan</h1>
+    <p class="cover-sub">A single working sheet for the storefront + admin build: user stories, critical flows, infrastructure decisions, and a phased task breakdown. A living document — decisions get marked as we settle them.</p>
+
+    <div class="titleblock">
+      <div class="tb-cell tb-span2">
+        <div class="tb-k">Project</div>
+        <div class="tb-v big">Carpentry Storefront &amp; Admin Portal</div>
+      </div>
+      <div class="tb-cell">
+        <div class="tb-k">Sheet</div>
+        <div class="tb-v">A-001</div>
+      </div>
+      <div class="tb-cell edge">
+        <div class="tb-k">Rev</div>
+        <div class="tb-v">E</div>
+      </div>
+      <div class="tb-cell tb-span2">
+        <div class="tb-k">Stack</div>
+        <div class="tb-v">Next.js · Tailwind · Supabase · Stripe</div>
+      </div>
+      <div class="tb-cell">
+        <div class="tb-k">Phases</div>
+        <div class="tb-v">0 – 7</div>
+      </div>
+      <div class="tb-cell edge">
+        <div class="tb-k">Status</div>
+        <div class="tb-v">Ready to build</div>
+      </div>
+    </div>
+  </div>
+</header>
+
+<!-- ============ NAV ============ -->
+<nav class="topnav" aria-label="Section navigation">
+  <div class="topnav-inner">
+    <span class="topnav-brand">A-001</span>
+    <a href="#overview">Overview</a>
+    <a href="#infra">Infra</a>
+    <a href="#data">Data</a>
+    <a href="#stories">Stories</a>
+    <a href="#flows">Flows</a>
+    <a href="#phases">Phases</a>
+    <a href="#decisions">Open Items</a>
+  </div>
+</nav>
+
+<main>
+
+  <!-- ===== OVERVIEW ===== -->
+  <section class="section" id="overview">
+    <div class="sec-head">
+      <div class="sec-eyebrow"><span class="num">01</span> Overview &amp; scope</div>
+      <h2>Two storefronts sharing one workshop</h2>
+      <p class="lede">A public store where visitors browse and buy handmade carpentry, and a private portal where the maker runs inventory, orders, and merchandising. Both are one Next.js app talking to one Supabase project, with Stripe handling money so we never touch card data.</p>
+    </div>
+
+    <div class="scope-grid">
+      <div class="scope-card">
+        <h3>In scope · v1</h3>
+        <ul>
+          <li>Public catalog with filter, sort &amp; search</li>
+          <li>Cart, coupon entry &amp; Stripe checkout</li>
+          <li>Order confirmation &amp; status updates by email</li>
+          <li>Verified-purchase product reviews</li>
+          <li>Admin: products, stock, photos, pricing, tags</li>
+          <li>Admin: orders, coupons, sales/discounts, reviews</li>
+          <li>Standard pages: landing, about, contact, policies</li>
+        </ul>
+      </div>
+      <div class="scope-card out">
+        <h3>Out of scope · v1 (parked)</h3>
+        <ul>
+          <li>Customer loyalty / points program</li>
+          <li>Multi-maker / marketplace accounts</li>
+          <li>Wishlists &amp; back-in-stock alerts (stretch)</li>
+          <li>Full CMS for arbitrary page building</li>
+          <li>Native mobile app</li>
+          <li>International multi-currency (single currency v1)</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="dim" style="margin-top:32px"><span class="end"></span><span class="rule"></span><span class="label">End 01</span><span class="rule"></span><span class="end"></span></div>
+  </section>
+
+  <!-- ===== INFRA ===== -->
+  <section class="section" id="infra">
+    <div class="sec-head">
+      <div class="sec-eyebrow"><span class="num">02</span> Infrastructure decisions</div>
+      <h2>The bill of materials</h2>
+      <p class="lede">Your proposed stack holds up well. Below is the material list with status — <span class="pill decided">Decided</span> is settled, <span class="pill rec">Recommended</span> is my suggested default awaiting your sign-off, and <span class="pill open">Open</span> needs a call before the phase that depends on it.</p>
+    </div>
+
+    <table class="dtable">
+      <thead><tr><th>Layer</th><th>Choice</th><th>Notes &amp; rationale</th><th>Status</th></tr></thead>
+      <tbody>
+        <tr><td class="k">Framework</td><td class="v">Next.js (App Router, TS)</td><td class="v">Server components for catalog SEO, route handlers for the Stripe webhook &amp; server-side coupon/stock checks.</td><td><span class="pill decided">Decided</span></td></tr>
+        <tr><td class="k">Styling</td><td class="v">Tailwind CSS</td><td class="v">Plus a small token layer + component primitives so storefront and admin stay consistent.</td><td><span class="pill decided">Decided</span></td></tr>
+        <tr><td class="k">Database</td><td class="v">Supabase Postgres</td><td class="v">Relational fits products/orders/reviews cleanly. Row Level Security = public reads, admin-only writes.</td><td><span class="pill decided">Decided</span></td></tr>
+        <tr><td class="k">Auth</td><td class="v">Supabase Auth</td><td class="v">Admin gated by a role claim. Customer accounts are a separate open question (see below).</td><td><span class="pill decided">Decided</span></td></tr>
+        <tr><td class="k">Media / photos</td><td class="v">Supabase Storage + next/image</td><td class="v">One bucket for product photos, public read, admin write, served through the image optimizer.</td><td><span class="pill rec">Recommended</span></td></tr>
+        <tr><td class="k">Payments</td><td class="v">Stripe Checkout (hosted)</td><td class="v">Redirect flow keeps card data entirely off our servers (minimal PCI scope). Payment Element is the fallback if we later want an embedded checkout.</td><td><span class="pill rec">Recommended</span></td></tr>
+        <tr><td class="k">Order source of truth</td><td class="v">Stripe webhook</td><td class="v">Order is created &amp; stock decremented on the verified <code>checkout.session.completed</code> event — never on the client redirect.</td><td><span class="pill decided">Decided</span></td></tr>
+        <tr><td class="k">Transactional email</td><td class="v">Resend</td><td class="v">Free tier (3k/mo) covers this store's volume at $0 and React Email fits the Next.js stack. Postmark stays the fallback if deliverability ever needs an upgrade — a small swap behind the send function.</td><td><span class="pill decided">Decided</span></td></tr>
+        <tr><td class="k">Hosting</td><td class="v">Vercel</td><td class="v">Phase 0 spike tried Cloudflare Workers via the OpenNext adapter first (its free egress suits an image-heavy catalog) but hit a hard local build wall: <code>workerd</code> requires macOS 13.5+ (this dev machine is on 12.6) or a glibc-linux container with a modern Docker runtime, neither available here. Vercel builds and runs natively with zero extra tooling — first-party Next.js support, free preview deploys per push. Re-visit Cloudflare later if egress costs become material at scale.</td><td><span class="pill decided">Decided</span></td></tr>
+        <tr><td class="k">Search / filter</td><td class="v">Postgres + indexes</td><td class="v">Indexed columns for price/tags; <code>pg_trgm</code> or full-text for name search. No external search engine at v1.</td><td><span class="pill rec">Recommended</span></td></tr>
+        <tr><td class="k">Monitoring</td><td class="v">Sentry + web analytics</td><td class="v">Error tracking (esp. the webhook) and basic traffic/conversion signals; analytics provider follows the host.</td><td><span class="pill rec">Recommended</span></td></tr>
+        <tr><td class="k">Tax &amp; currency</td><td class="v">Stripe Tax</td><td class="v">Single currency v1; Stripe computes tax at checkout rather than hand-rolling rates.</td><td><span class="pill decided">Decided</span></td></tr>
+        <tr><td class="k">Fulfillment</td><td class="v">Local pickup (v1)</td><td class="v">No carrier shipping at launch — orders are collected in person. Schema kept shipping-ready (weights/dimensions) so flat-rate or weight/zone can slot in later.</td><td><span class="pill decided">Decided</span></td></tr>
+        <tr><td class="k">Customer accounts</td><td class="v">Guest checkout + optional account</td><td class="v">Minimal required info to buy; account creation is offered (not required) for easier reorders &amp; order history.</td><td><span class="pill decided">Decided</span></td></tr>
+        <tr><td class="k">Product model</td><td class="v">One SKU per product</td><td class="v">No variant matrix — a different size/version is listed as its own product. Simpler stock, pricing, and reviews.</td><td><span class="pill decided">Decided</span></td></tr>
+        <tr><td class="k">Inventory</td><td class="v">Decrement on payment</td><td class="v">Stock reduced in the webhook transaction on confirmed payment; tiny oversell window guarded by a conditional update.</td><td><span class="pill decided">Decided</span></td></tr>
+        <tr><td class="k">Reviews</td><td class="v">Verified purchase + pre-moderation</td><td class="v">Only buyers of that item can review; reviews are held pending until the owner approves.</td><td><span class="pill decided">Decided</span></td></tr>
+      </tbody>
+    </table>
+
+    <div class="dim" style="margin-top:32px"><span class="end"></span><span class="rule"></span><span class="label">End 02</span><span class="rule"></span><span class="end"></span></div>
+  </section>
+
+  <!-- ===== DATA MODEL ===== -->
+  <section class="section" id="data">
+    <div class="sec-head">
+      <div class="sec-eyebrow"><span class="num">03</span> Data model (first cut)</div>
+      <h2>The cut list</h2>
+      <p class="lede">A starting schema — enough to size the build. Field types are indicative. Each product is a single SKU (no variant matrix). Products carry a <b>made_to_order</b> flag and <b>lead_time_days</b> so the store can show longer fulfillment on built-to-order pieces while still tracking a stock count. Weight/dimension fields are included now so shipping can be added later without a migration scramble.</p>
+    </div>
+
+    <div class="schema-grid">
+      <div class="table-card"><h4>products <span>catalog</span></h4><ul>
+        <li><span class="pk">id</span><span class="type">uuid</span></li>
+        <li>slug<span class="type">text</span></li>
+        <li>name<span class="type">text</span></li>
+        <li>description<span class="type">text</span></li>
+        <li>price<span class="type">int ¢</span></li>
+        <li>stock<span class="type">int</span></li>
+        <li>is_active<span class="type">bool</span></li>
+        <li>sale_price<span class="type">int?</span></li>
+        <li>made_to_order<span class="type">bool</span></li>
+        <li>lead_time_days<span class="type">int?</span></li>
+        <li>weight_g<span class="type">int?</span></li>
+      </ul></div>
+
+      <div class="table-card"><h4>product_images <span>media</span></h4><ul>
+        <li><span class="pk">id</span><span class="type">uuid</span></li>
+        <li>product_id<span class="type">fk</span></li>
+        <li>storage_path<span class="type">text</span></li>
+        <li>alt<span class="type">text</span></li>
+        <li>sort_order<span class="type">int</span></li>
+      </ul></div>
+
+      <div class="table-card"><h4>customers <span>optional acct</span></h4><ul>
+        <li><span class="pk">id</span><span class="type">uuid</span></li>
+        <li>auth_user_id<span class="type">fk</span></li>
+        <li>email<span class="type">text</span></li>
+        <li>name<span class="type">text?</span></li>
+        <li>created_at<span class="type">ts</span></li>
+      </ul></div>
+
+      <div class="table-card"><h4>tags <span>taxonomy</span></h4><ul>
+        <li><span class="pk">id</span><span class="type">uuid</span></li>
+        <li>name<span class="type">text</span></li>
+        <li>slug<span class="type">text</span></li>
+      </ul></div>
+
+      <div class="table-card"><h4>product_tags <span>join</span></h4><ul>
+        <li>product_id<span class="type">fk</span></li>
+        <li>tag_id<span class="type">fk</span></li>
+      </ul></div>
+
+      <div class="table-card"><h4>orders <span>sales</span></h4><ul>
+        <li><span class="pk">id</span><span class="type">uuid</span></li>
+        <li>email<span class="type">text</span></li>
+        <li>status<span class="type">enum</span></li>
+        <li>subtotal<span class="type">int ¢</span></li>
+        <li>total<span class="type">int ¢</span></li>
+        <li>stripe_session<span class="type">text</span></li>
+        <li>fulfillment<span class="type">pickup</span></li>
+        <li>customer_id<span class="type">fk?</span></li>
+        <li>coupon_id<span class="type">fk?</span></li>
+      </ul></div>
+
+      <div class="table-card"><h4>order_items <span>line items</span></h4><ul>
+        <li><span class="pk">id</span><span class="type">uuid</span></li>
+        <li>order_id<span class="type">fk</span></li>
+        <li>product_id<span class="type">fk</span></li>
+        <li>qty<span class="type">int</span></li>
+        <li>unit_price<span class="type">int ¢</span></li>
+      </ul></div>
+
+      <div class="table-card"><h4>coupons <span>promo</span></h4><ul>
+        <li><span class="pk">id</span><span class="type">uuid</span></li>
+        <li>code<span class="type">text</span></li>
+        <li>kind<span class="type">%/fixed</span></li>
+        <li>value<span class="type">int</span></li>
+        <li>min_total<span class="type">int?</span></li>
+        <li>usage_limit<span class="type">int?</span></li>
+        <li>expires_at<span class="type">ts?</span></li>
+      </ul></div>
+
+      <div class="table-card"><h4>reviews <span>UGC</span></h4><ul>
+        <li><span class="pk">id</span><span class="type">uuid</span></li>
+        <li>product_id<span class="type">fk</span></li>
+        <li>order_id<span class="type">fk</span></li>
+        <li>rating<span class="type">1–5</span></li>
+        <li>body<span class="type">text</span></li>
+        <li>status<span class="type">enum</span></li>
+      </ul></div>
+    </div>
+
+    <div class="dim" style="margin-top:32px"><span class="end"></span><span class="rule"></span><span class="label">End 03</span><span class="rule"></span><span class="end"></span></div>
+  </section>
+
+  <!-- ===== USER STORIES ===== -->
+  <section class="section" id="stories">
+    <div class="sec-head">
+      <div class="sec-eyebrow"><span class="num">04</span> User stories</div>
+      <h2>Who needs to do what</h2>
+      <p class="lede">Framed by the two people using the system: the shopper out front and the maker in the back.</p>
+    </div>
+
+    <div class="stories">
+      <div class="persona">
+        <span class="persona-tag">Visitor / Customer</span>
+        <div class="story"><span class="id">C-01</span><span class="s">Browse the catalog and <b>filter by price, tag, or name</b>, and sort by price, name, or popularity.</span></div>
+        <div class="story"><span class="id">C-02</span><span class="s">Open a product to see <b>photos, price, stock state, tags, and reviews</b>.</span></div>
+        <div class="story"><span class="id">C-03</span><span class="s">Add items to a <b>cart</b> and adjust quantities within available stock.</span></div>
+        <div class="story"><span class="id">C-04</span><span class="s">Apply a <b>coupon code</b> and see the discount before paying.</span></div>
+        <div class="story"><span class="id">C-05</span><span class="s"><b>Check out and pay securely</b> without the site handling card details.</span></div>
+        <div class="story"><span class="id">C-06</span><span class="s">Receive an <b>order confirmation</b> and <b>status updates</b> as it's fulfilled.</span></div>
+        <div class="story"><span class="id">C-07</span><span class="s"><b>Track an order's</b> current status after purchase.</span></div>
+        <div class="story"><span class="id">C-08</span><span class="s">Leave a <b>review</b> on a product I actually bought.</span></div>
+        <div class="story"><span class="id">C-09</span><span class="s">Read the <b>about</b> page and reach the maker via a <b>contact form</b>.</span></div>
+      </div>
+
+      <div class="persona">
+        <span class="persona-tag admin">Admin / Owner</span>
+        <div class="story"><span class="id">A-01</span><span class="s"><b>Log in</b> to a private portal not exposed to the public.</span></div>
+        <div class="story"><span class="id">A-02</span><span class="s"><b>Add, edit, and remove products</b>, and toggle whether they're listed.</span></div>
+        <div class="story"><span class="id">A-03</span><span class="s"><b>Change stock levels</b> and see low/out-of-stock at a glance.</span></div>
+        <div class="story"><span class="id">A-04</span><span class="s"><b>Upload and reorder photos</b> per product.</span></div>
+        <div class="story"><span class="id">A-05</span><span class="s"><b>Set prices</b> and apply <b>sales / discounts</b>.</span></div>
+        <div class="story"><span class="id">A-06</span><span class="s"><b>Tag and categorize</b> items for browsing.</span></div>
+        <div class="story"><span class="id">A-07</span><span class="s"><b>Generate and manage coupon codes</b> with limits and expiry.</span></div>
+        <div class="story"><span class="id">A-08</span><span class="s"><b>View and manage orders</b>, updating fulfillment status.</span></div>
+        <div class="story"><span class="id">A-09</span><span class="s"><b>View sales records</b> and basic reporting.</span></div>
+        <div class="story"><span class="id">A-10</span><span class="s"><b>Moderate reviews</b> — approve, hide, or respond.</span></div>
+      </div>
+    </div>
+
+    <div class="dim" style="margin-top:32px"><span class="end"></span><span class="rule"></span><span class="label">End 04</span><span class="rule"></span><span class="end"></span></div>
+  </section>
+
+  <!-- ===== FLOWS ===== -->
+  <section class="section" id="flows">
+    <div class="sec-head">
+      <div class="sec-eyebrow"><span class="num">05</span> Critical flows</div>
+      <h2>The paths that must not break</h2>
+      <p class="lede">The sequences where a bug costs money or trust. The purchase and inventory flows are the ones to build defensively.</p>
+    </div>
+
+    <div class="flow">
+      <div class="flow-head"><span class="fnum">1</span><h3>Purchase &amp; fulfillment</h3><span class="critical">Money path</span></div>
+      <ol class="flow-steps">
+        <li>Customer builds a <b>cart</b> (held client-side) and enters an optional coupon.</li>
+        <li>At checkout, the <b>server re-validates</b> stock, prices, and the coupon — the client is never trusted for totals.</li>
+        <li>Server creates a <b>Stripe Checkout Session</b> with verified line items and <b>Stripe Tax</b>; fulfillment is <b>local pickup</b> (no shipping calc at v1). Customer is redirected to Stripe to pay.</li>
+        <li>Stripe fires <b>checkout.session.completed</b> to our webhook; we verify the signature.</li>
+        <li>Webhook <b>creates the order</b>, writes line items, <b>decrements stock</b>, and stores the Stripe reference — all in one transaction.</li>
+        <li>Confirmation email sent with <b>pickup details</b> (and a <b>made-to-order lead time</b> when any item is built to order); customer lands on a <b>success page</b>; order appears in the admin queue.</li>
+      </ol>
+      <div class="flow-note"><b>Guardrail</b> · The order is born from the webhook, not the browser redirect, so a closed tab or flaky network never loses a paid order.</div>
+    </div>
+
+    <div class="flow">
+      <div class="flow-head"><span class="fnum">2</span><h3>Inventory &amp; concurrency</h3><span class="critical">Oversell risk</span></div>
+      <ol class="flow-steps">
+        <li>Two customers check out the last unit of a product at nearly the same time.</li>
+        <li>Stock is decremented in a <b>guarded DB transaction</b> (conditional update: only if <code>stock &gt;= qty</code>).</li>
+        <li>The second webhook's decrement <b>fails the condition</b> and is flagged.</li>
+        <li>That order is auto-<b>refunded via Stripe</b> and the customer is emailed an apology + restock note.</li>
+      </ol>
+      <div class="flow-note"><b>Decision</b> · Decrement-on-payment (simple, tiny oversell window) vs. reserve-at-checkout (complex, needs expiry). Recommending decrement-on-payment for v1 given low volume.</div>
+    </div>
+
+    <div class="flow">
+      <div class="flow-head"><span class="fnum">3</span><h3>Add / edit a product</h3></div>
+      <ol class="flow-steps">
+        <li>Admin opens the product form; fills name, description, price, stock, tags.</li>
+        <li>Uploads photos to Storage; drags to set the <b>display order</b>.</li>
+        <li>Optionally sets a <b>sale price</b>, toggles <b>active</b>, and flags <b>made-to-order</b> with a lead time.</li>
+        <li>Save writes the product + images + tag joins; storefront reflects it immediately.</li>
+      </ol>
+    </div>
+
+    <div class="flow">
+      <div class="flow-head"><span class="fnum">4</span><h3>Leave a verified review</h3></div>
+      <ol class="flow-steps">
+        <li>After delivery, customer follows a review link tied to their <b>order + product</b>.</li>
+        <li>System confirms that order actually contained that product (<b>verified purchase</b>).</li>
+        <li>Review is saved as <b>pending</b>; admin approves or hides it from the moderation queue.</li>
+        <li>Approved reviews show on the product page and update its <b>aggregate rating</b>.</li>
+      </ol>
+    </div>
+
+    <div class="flow">
+      <div class="flow-head"><span class="fnum">5</span><h3>Coupon redemption</h3></div>
+      <ol class="flow-steps">
+        <li>Customer enters a code in the cart; server checks <b>validity, min-total, usage limit, expiry</b>.</li>
+        <li>Valid → discount is reflected and passed into the Stripe session as a real price reduction.</li>
+        <li>On successful payment, the coupon's <b>usage count increments</b> with the order.</li>
+      </ol>
+    </div>
+
+    <div class="dim" style="margin-top:24px"><span class="end"></span><span class="rule"></span><span class="label">End 05</span><span class="rule"></span><span class="end"></span></div>
+  </section>
+
+  <!-- ===== PHASES ===== -->
+  <section class="section" id="phases">
+    <div class="sec-head">
+      <div class="sec-eyebrow"><span class="num">06</span> Build phases</div>
+      <h2>The build sequence</h2>
+      <p class="lede">Ordered so each phase leaves something demonstrable. Tick tasks as they land — the bars fill to track progress. (Checkmarks are for this session only, not saved.)</p>
+    </div>
+
+    <div id="phase-list">
+      <!-- Phase 0 -->
+      <div class="phase" data-phase>
+        <div class="phase-bar">
+          <span class="pn">0</span>
+          <div class="phase-meta"><h3>Foundation &amp; environments</h3><p>Scaffolding, accounts, and a deployable shell.</p></div>
+          <div class="phase-prog"><span class="pc">0/7</span><div class="bar"><i></i></div></div>
+        </div>
+        <div class="phase-body">
+          <div class="task"><input type="checkbox" id="t0-1"><label for="t0-1">Init Next.js (App Router, TypeScript) + Tailwind + token layer</label></div>
+          <div class="task"><input type="checkbox" id="t0-2"><label for="t0-2">Create Supabase projects (dev &amp; prod), wire local config</label></div>
+          <div class="task"><input type="checkbox" id="t0-3"><label for="t0-3">Set up Stripe account in test mode; store keys as env vars <span class="tag">secrets</span></label></div>
+          <div class="task"><input type="checkbox" id="t0-8" checked><label for="t0-8">Hosting spike: tried Cloudflare (OpenNext) — blocked locally by <code>workerd</code>'s macOS 13.5+/glibc-linux requirement; decided <b>Vercel</b> <span class="tag">decision</span></label></div>
+          <div class="task"><input type="checkbox" id="t0-4"><label for="t0-4">Vercel project + preview deploys + env wiring</label></div>
+          <div class="task"><input type="checkbox" id="t0-5"><label for="t0-5">Base layout, nav/footer shell, shared UI primitives</label></div>
+          <div class="task"><input type="checkbox" id="t0-6"><label for="t0-6">Supabase Auth + admin role gating on portal routes</label></div>
+          <div class="task"><input type="checkbox" id="t0-7"><label for="t0-7">Sentry + analytics scaffold</label></div>
+          <div class="exit"><b>Exit</b> — hosting host confirmed via spike; hello-world deploys to prod on the domain; admin login blocks the portal.</div>
+        </div>
+      </div>
+
+      <!-- Phase 1 -->
+      <div class="phase" data-phase>
+        <div class="phase-bar">
+          <span class="pn">1</span>
+          <div class="phase-meta"><h3>Data model &amp; admin catalog</h3><p>Schema first, then the tools to fill it.</p></div>
+          <div class="phase-prog"><span class="pc">0/8</span><div class="bar"><i></i></div></div>
+        </div>
+        <div class="phase-body">
+          <div class="task"><input type="checkbox" id="t1-1"><label for="t1-1">Migrate schema: products (+ made-to-order, lead time, weight), images, tags, joins, customers</label></div>
+          <div class="task"><input type="checkbox" id="t1-2"><label for="t1-2">RLS: public reads active products; admin-only writes <span class="tag">security</span></label></div>
+          <div class="task"><input type="checkbox" id="t1-3"><label for="t1-3">Storage bucket + upload policy for product photos</label></div>
+          <div class="task"><input type="checkbox" id="t1-4"><label for="t1-4">Admin product list: search, sort, low-stock indicators</label></div>
+          <div class="task"><input type="checkbox" id="t1-5"><label for="t1-5">Create/edit product form (name, desc, price, stock, active, made-to-order + lead time)</label></div>
+          <div class="task"><input type="checkbox" id="t1-6"><label for="t1-6">Multi-image upload with reorder &amp; delete</label></div>
+          <div class="task"><input type="checkbox" id="t1-7"><label for="t1-7">Tag management + assign tags to products</label></div>
+          <div class="task"><input type="checkbox" id="t1-8"><label for="t1-8">Apply sale price / discount to a product</label></div>
+          <div class="exit"><b>Exit</b> — owner can fully manage the catalog end to end.</div>
+        </div>
+      </div>
+
+      <!-- Phase 2 -->
+      <div class="phase" data-phase>
+        <div class="phase-bar">
+          <span class="pn">2</span>
+          <div class="phase-meta"><h3>Public storefront</h3><p>Discovery: browse, filter, and view.</p></div>
+          <div class="phase-prog"><span class="pc">0/6</span><div class="bar"><i></i></div></div>
+        </div>
+        <div class="phase-body">
+          <div class="task"><input type="checkbox" id="t2-1"><label for="t2-1">Listing page: filter by price/tag/name, sort by price/name/popularity</label></div>
+          <div class="task"><input type="checkbox" id="t2-2"><label for="t2-2">Pagination or infinite scroll</label></div>
+          <div class="task"><input type="checkbox" id="t2-3"><label for="t2-3">Product detail: gallery, description, sale price, stock state, tags, made-to-order badge + lead time</label></div>
+          <div class="task"><input type="checkbox" id="t2-4"><label for="t2-4">Landing page with featured products</label></div>
+          <div class="task"><input type="checkbox" id="t2-5"><label for="t2-5">Responsive shell — mobile nav, footer</label></div>
+          <div class="task"><input type="checkbox" id="t2-6"><label for="t2-6">SEO basics: metadata, slugs, sitemap, OG images <span class="tag">seo</span></label></div>
+          <div class="exit"><b>Exit</b> — a visitor can find and inspect any product.</div>
+        </div>
+      </div>
+
+      <!-- Phase 3 -->
+      <div class="phase" data-phase>
+        <div class="phase-bar">
+          <span class="pn">3</span>
+          <div class="phase-meta"><h3>Cart &amp; checkout</h3><p>The money path, built defensively.</p></div>
+          <div class="phase-prog"><span class="pc">0/7</span><div class="bar"><i></i></div></div>
+        </div>
+        <div class="phase-body">
+          <div class="task"><input type="checkbox" id="t3-1"><label for="t3-1">Cart state: add/update/remove, quantity vs stock</label></div>
+          <div class="task"><input type="checkbox" id="t3-2"><label for="t3-2">Cart drawer/page with subtotal + coupon field</label></div>
+          <div class="task"><input type="checkbox" id="t3-3"><label for="t3-3">Server-side coupon validation <span class="tag">critical</span></label></div>
+          <div class="task"><input type="checkbox" id="t3-4"><label for="t3-4">Create Stripe Checkout Session (verified totals, shipping, tax)</label></div>
+          <div class="task"><input type="checkbox" id="t3-5"><label for="t3-5">Fulfillment = local pickup (no carrier rates v1); configure Stripe Tax <span class="tag">tax</span></label></div>
+          <div class="task"><input type="checkbox" id="t3-6"><label for="t3-6">Success &amp; cancel pages</label></div>
+          <div class="task"><input type="checkbox" id="t3-7"><label for="t3-7">Webhook: verify signature, create order, decrement stock atomically <span class="tag">critical</span></label></div>
+          <div class="exit"><b>Exit</b> — a test purchase creates a paid order and adjusts inventory correctly.</div>
+        </div>
+      </div>
+
+      <!-- Phase 4 -->
+      <div class="phase" data-phase>
+        <div class="phase-bar">
+          <span class="pn">4</span>
+          <div class="phase-meta"><h3>Orders &amp; fulfillment</h3><p>Run orders from paid to delivered.</p></div>
+          <div class="phase-prog"><span class="pc">0/6</span><div class="bar"><i></i></div></div>
+        </div>
+        <div class="phase-body">
+          <div class="task"><input type="checkbox" id="t4-1"><label for="t4-1">Order status model: paid → preparing → ready for pickup → collected / cancelled / refunded</label></div>
+          <div class="task"><input type="checkbox" id="t4-2"><label for="t4-2">Admin order list + detail with status changes &amp; notes</label></div>
+          <div class="task"><input type="checkbox" id="t4-3"><label for="t4-3">Transactional email: confirmation + status updates (incl. pickup-ready &amp; made-to-order lead time) <span class="tag">email</span></label></div>
+          <div class="task"><input type="checkbox" id="t4-4"><label for="t4-4">Customer order tracking (guest lookup or account)</label></div>
+          <div class="task"><input type="checkbox" id="t4-5"><label for="t4-5">Refund handling via Stripe + restock</label></div>
+          <div class="task"><input type="checkbox" id="t4-6"><label for="t4-6">Basic sales reporting / records view</label></div>
+          <div class="exit"><b>Exit</b> — owner processes an order start to finish; customer stays informed.</div>
+        </div>
+      </div>
+
+      <!-- Phase 5 -->
+      <div class="phase" data-phase>
+        <div class="phase-bar">
+          <span class="pn">5</span>
+          <div class="phase-meta"><h3>Reviews, coupons &amp; merchandising</h3><p>The tools that drive repeat sales.</p></div>
+          <div class="phase-prog"><span class="pc">0/6</span><div class="bar"><i></i></div></div>
+        </div>
+        <div class="phase-body">
+          <div class="task"><input type="checkbox" id="t5-1"><label for="t5-1">Verified-purchase review submission (rating + text)</label></div>
+          <div class="task"><input type="checkbox" id="t5-2"><label for="t5-2">Admin moderation queue: approve / hide / respond</label></div>
+          <div class="task"><input type="checkbox" id="t5-3"><label for="t5-3">Display approved reviews + aggregate rating on product page</label></div>
+          <div class="task"><input type="checkbox" id="t5-4"><label for="t5-4">Coupon CRUD: %/fixed, min total, usage limit, expiry</label></div>
+          <div class="task"><input type="checkbox" id="t5-5"><label for="t5-5">Popularity metric feeding the sort (sales count)</label></div>
+          <div class="task"><input type="checkbox" id="t5-6"><label for="t5-6">Sitewide / seasonal sales</label></div>
+          <div class="exit"><b>Exit</b> — full merchandising toolkit is live.</div>
+        </div>
+      </div>
+
+      <!-- Phase 6 -->
+      <div class="phase" data-phase>
+        <div class="phase-bar">
+          <span class="pn">6</span>
+          <div class="phase-meta"><h3>Content &amp; standard pages</h3><p>The trust-building surround.</p></div>
+          <div class="phase-prog"><span class="pc">0/5</span><div class="bar"><i></i></div></div>
+        </div>
+        <div class="phase-body">
+          <div class="task"><input type="checkbox" id="t6-1"><label for="t6-1">About / the maker's story page</label></div>
+          <div class="task"><input type="checkbox" id="t6-2"><label for="t6-2">Contact form with spam protection + email delivery</label></div>
+          <div class="task"><input type="checkbox" id="t6-3"><label for="t6-3">Policies: shipping, returns, privacy, terms</label></div>
+          <div class="task"><input type="checkbox" id="t6-4"><label for="t6-4">FAQ / care &amp; maintenance instructions (fits handmade)</label></div>
+          <div class="task"><input type="checkbox" id="t6-5"><label for="t6-5">Newsletter capture (optional)</label></div>
+          <div class="exit"><b>Exit</b> — the site reads as complete and trustworthy.</div>
+        </div>
+      </div>
+
+      <!-- Phase 7 -->
+      <div class="phase" data-phase>
+        <div class="phase-bar">
+          <span class="pn">7</span>
+          <div class="phase-meta"><h3>Hardening &amp; launch</h3><p>Make it safe, fast, and live.</p></div>
+          <div class="phase-prog"><span class="pc">0/7</span><div class="bar"><i></i></div></div>
+        </div>
+        <div class="phase-body">
+          <div class="task"><input type="checkbox" id="t7-1"><label for="t7-1">Accessibility pass: keyboard, contrast, focus, labels</label></div>
+          <div class="task"><input type="checkbox" id="t7-2"><label for="t7-2">Performance: image sizing, caching, Core Web Vitals</label></div>
+          <div class="task"><input type="checkbox" id="t7-3"><label for="t7-3">Cross-browser &amp; device QA</label></div>
+          <div class="task"><input type="checkbox" id="t7-4"><label for="t7-4">Security review: RLS audit, secrets, webhook verification, rate limits <span class="tag">security</span></label></div>
+          <div class="task"><input type="checkbox" id="t7-5"><label for="t7-5">Edge cases: stock races, double-submit, expired coupons</label></div>
+          <div class="task"><input type="checkbox" id="t7-6"><label for="t7-6">Stripe live mode + go-live checklist + DNS + backups</label></div>
+          <div class="task"><input type="checkbox" id="t7-7"><label for="t7-7">Seed real content &amp; soft launch</label></div>
+          <div class="exit"><b>Exit</b> — production launch.</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="dim" style="margin-top:24px"><span class="end"></span><span class="rule"></span><span class="label">End 06</span><span class="rule"></span><span class="end"></span></div>
+  </section>
+
+  <!-- ===== OPEN ITEMS ===== -->
+  <section class="section" id="decisions">
+    <div class="sec-head">
+      <div class="sec-eyebrow"><span class="num">07</span> Open items &amp; risks</div>
+      <h2>What we need to settle</h2>
+      <p class="lede">The parking lot — decisions to make as a group before their dependent phase. A few of these (shipping, especially) can reshape the plan, so they're worth an early call.</p>
+    </div>
+
+    <div class="two-col">
+      <div>
+        <h3 style="font-family:var(--mono);font-size:12px;letter-spacing:.16em;text-transform:uppercase;color:var(--ok);margin:0 0 4px;">Logged</h3>
+        <ul class="qlist resolved">
+          <li><b>Hosting</b><span><b class="ans">→ Vercel.</b> Phase 0 spike hit a hard local build wall on Cloudflare's OpenNext adapter (<code>workerd</code> needs macOS 13.5+ or a modern glibc-linux container — unavailable on the dev machine as configured). Vercel builds natively, no extra tooling. Free Hobby tier through build; upgrade to Pro at go-live per Vercel's commercial-use terms.</span></li>
+          <li><b>Email provider</b><span><b class="ans">→ Resend.</b> Free tier covers volume; React Email fits the stack. Postmark is the fallback.</span></li>
+          <li><b>Shipping model</b><span><b class="ans">→ Local pickup for v1.</b> Schema kept shipping-ready so flat-rate or weight/zone can be added later.</span></li>
+          <li><b>Guest vs. accounts</b><span><b class="ans">→ Guest checkout, minimal info.</b> Account creation offered but optional.</span></li>
+          <li><b>Product variants</b><span><b class="ans">→ One SKU per product.</b> Sizes/versions listed separately; variants table dropped.</span></li>
+          <li><b>Made-to-order</b><span><b class="ans">→ Per-product flag + lead time.</b> Still stock-counted; longer fulfillment shown to buyers.</span></li>
+          <li><b>Tax &amp; currency</b><span><b class="ans">→ Stripe Tax, single currency.</b></span></li>
+          <li><b>Review policy</b><span><b class="ans">→ Verified purchase + pre-moderation.</b></span></li>
+          <li><b>Inventory</b><span><b class="ans">→ Decrement on payment.</b> Guarded conditional update.</span></li>
+        </ul>
+      </div>
+      <div>
+        <h3 style="font-family:var(--mono);font-size:12px;letter-spacing:.16em;text-transform:uppercase;color:var(--walnut);margin:0 0 4px;">Risks to watch</h3>
+        <ul class="qlist risk">
+          <li><b>Overselling one-of-a-kind stock</b><span>Handmade goods are often quantity-one; the concurrency guard in Flow 2 matters more than for mass retail.</span></li>
+          <li><b>Shipping deferred, not gone</b><span>Pickup sidesteps freight for now — but revisit before adding shipping, since bulky items make flat-rate risky (see comparison).</span></li>
+          <li><b>Lead-time clarity</b><span>Made-to-order pieces must show their lead time clearly, or buyers expect instant pickup.</span></li>
+          <li><b>Webhook reliability</b><span>The order pipeline hinges on it — needs retries, idempotency, and monitoring.</span></li>
+          <li><b>Single-admin bus factor</b><span>One owner running everything; keep the admin simple and document the runbook.</span></li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="dim" style="margin-top:32px"><span class="end"></span><span class="rule"></span><span class="label">End of sheet</span><span class="rule"></span><span class="end"></span></div>
+  </section>
+
+</main>
+
+<footer>
+  <div class="foot-inner">
+    <span>Sheet A-001 · Homemade Carpentry Webstore</span>
+    <span class="rev">Rev D · Living Document</span>
+  </div>
+</footer>
+
+<script>
+(function(){
+  // ---- Scrollspy nav ----
+  var links = Array.prototype.slice.call(document.querySelectorAll('.topnav a'));
+  var map = {};
+  links.forEach(function(a){ map[a.getAttribute('href').slice(1)] = a; });
+  var sections = Array.prototype.slice.call(document.querySelectorAll('.section'));
+  if('IntersectionObserver' in window){
+    var spy = new IntersectionObserver(function(entries){
+      entries.forEach(function(e){
+        if(e.isIntersecting){
+          links.forEach(function(l){ l.classList.remove('active'); });
+          var id = e.target.getAttribute('id');
+          if(map[id]) map[id].classList.add('active');
+        }
+      });
+    },{rootMargin:'-45% 0px -50% 0px'});
+    sections.forEach(function(s){ spy.observe(s); });
+  }
+
+  // ---- Phase progress bars ----
+  Array.prototype.slice.call(document.querySelectorAll('[data-phase]')).forEach(function(phase){
+    var boxes = Array.prototype.slice.call(phase.querySelectorAll('input[type=checkbox]'));
+    var count = phase.querySelector('.pc');
+    var fill = phase.querySelector('.bar i');
+    var total = boxes.length;
+    function update(){
+      var done = boxes.filter(function(b){return b.checked;}).length;
+      count.textContent = done + '/' + total;
+      fill.style.width = (total ? (done/total*100) : 0) + '%';
+    }
+    boxes.forEach(function(b){ b.addEventListener('change', update); });
+    update();
+  });
+
+  // ---- Collapse phase on header click (but not when toggling a checkbox) ----
+  Array.prototype.slice.call(document.querySelectorAll('.phase-bar')).forEach(function(bar){
+    bar.addEventListener('click', function(){
+      var body = bar.parentElement.querySelector('.phase-body');
+      body.style.display = (body.style.display === 'none') ? '' : 'none';
+    });
+  });
+})();
+</script>
+</body>
+</html>
