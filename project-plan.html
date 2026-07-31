@@ -737,7 +737,7 @@
           <div class="task"><input type="checkbox" id="t0-2"><label for="t0-2">Create Supabase projects (dev &amp; prod), wire local config — dev done, prod deferred to closer to launch</label></div>
           <div class="task"><input type="checkbox" id="t0-3" checked><label for="t0-3">Set up Stripe account in test mode; store keys as env vars <span class="tag">secrets</span></label></div>
           <div class="task"><input type="checkbox" id="t0-8" checked><label for="t0-8">Hosting spike: tried Cloudflare (OpenNext) — blocked locally by <code>workerd</code>'s macOS 13.5+/glibc-linux requirement; decided <b>Vercel</b> <span class="tag">decision</span></label></div>
-          <div class="task"><input type="checkbox" id="t0-4"><label for="t0-4">Vercel project + preview deploys + env wiring</label></div>
+          <div class="task"><input type="checkbox" id="t0-4" checked><label for="t0-4">Vercel project + preview deploys + env wiring — live at tinker-carpentry.vercel.app</label></div>
           <div class="task"><input type="checkbox" id="t0-5" checked><label for="t0-5">Base layout, nav/footer shell, shared UI primitives</label></div>
           <div class="task"><input type="checkbox" id="t0-6" checked><label for="t0-6">Supabase Auth + admin role gating on portal routes</label></div>
           <div class="task"><input type="checkbox" id="t0-7" checked><label for="t0-7">Sentry + analytics scaffold (Vercel Analytics)</label></div>
@@ -753,15 +753,15 @@
           <div class="phase-prog"><span class="pc">0/8</span><div class="bar"><i></i></div></div>
         </div>
         <div class="phase-body">
-          <div class="task"><input type="checkbox" id="t1-1"><label for="t1-1">Migrate schema: products (+ made-to-order, lead time, weight), images, tags, joins, customers</label></div>
-          <div class="task"><input type="checkbox" id="t1-2"><label for="t1-2">RLS: public reads active products; admin-only writes <span class="tag">security</span></label></div>
-          <div class="task"><input type="checkbox" id="t1-3"><label for="t1-3">Storage bucket + upload policy for product photos</label></div>
-          <div class="task"><input type="checkbox" id="t1-4"><label for="t1-4">Admin product list: search, sort, low-stock indicators</label></div>
-          <div class="task"><input type="checkbox" id="t1-5"><label for="t1-5">Create/edit product form (name, desc, price, stock, active, made-to-order + lead time)</label></div>
-          <div class="task"><input type="checkbox" id="t1-6"><label for="t1-6">Multi-image upload with reorder &amp; delete</label></div>
-          <div class="task"><input type="checkbox" id="t1-7"><label for="t1-7">Tag management + assign tags to products</label></div>
-          <div class="task"><input type="checkbox" id="t1-8"><label for="t1-8">Apply sale price / discount to a product</label></div>
-          <div class="exit"><b>Exit</b> — owner can fully manage the catalog end to end.</div>
+          <div class="task"><input type="checkbox" id="t1-1" checked><label for="t1-1">Migrate schema: products (+ made-to-order, lead time, weight), images, tags, joins, customers — migrations written, applied via Supabase GitHub integration on push to main</label></div>
+          <div class="task"><input type="checkbox" id="t1-2" checked><label for="t1-2">RLS: public reads active products; admin-only writes <span class="tag">security</span></label></div>
+          <div class="task"><input type="checkbox" id="t1-3" checked><label for="t1-3">Storage bucket + upload policy for product photos</label></div>
+          <div class="task"><input type="checkbox" id="t1-4" checked><label for="t1-4">Admin product list: search, sort, low-stock indicators</label></div>
+          <div class="task"><input type="checkbox" id="t1-5" checked><label for="t1-5">Create/edit product form (name, desc, price, stock, active, made-to-order + lead time)</label></div>
+          <div class="task"><input type="checkbox" id="t1-6" checked><label for="t1-6">Multi-image upload with reorder &amp; delete (up/down reorder, not drag-and-drop)</label></div>
+          <div class="task"><input type="checkbox" id="t1-7" checked><label for="t1-7">Tag management + assign tags to products</label></div>
+          <div class="task"><input type="checkbox" id="t1-8" checked><label for="t1-8">Apply sale price / discount to a product</label></div>
+          <div class="exit"><b>Exit</b> — owner can fully manage the catalog end to end. <i>Code complete; pending live verification against dev DB once migrations are pushed.</i></div>
         </div>
       </div>
 
