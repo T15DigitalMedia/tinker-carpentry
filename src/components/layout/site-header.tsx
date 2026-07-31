@@ -1,15 +1,11 @@
 import Link from "next/link";
 import { Container } from "@/components/ui/container";
-
-const navLinks = [
-  { href: "/shop", label: "Shop" },
-  { href: "/about", label: "About" },
-  { href: "/contact", label: "Contact" },
-];
+import { MobileNav } from "@/components/layout/mobile-nav";
+import { navLinks } from "@/components/layout/nav-links";
 
 export function SiteHeader() {
   return (
-    <header className="border-b border-line bg-paper">
+    <header className="relative border-b border-line bg-paper">
       <Container>
         <div className="flex h-16 items-center justify-between">
           <Link
@@ -18,7 +14,7 @@ export function SiteHeader() {
           >
             Tinker Carpentry
           </Link>
-          <nav className="flex items-center gap-6">
+          <nav className="hidden items-center gap-6 sm:flex">
             {navLinks.map((link) => (
               <Link
                 key={link.href}
@@ -28,13 +24,8 @@ export function SiteHeader() {
                 {link.label}
               </Link>
             ))}
-            <Link
-              href="/cart"
-              className="font-mono text-xs uppercase tracking-wider text-ink-2 hover:text-ink"
-            >
-              Cart
-            </Link>
           </nav>
+          <MobileNav />
         </div>
       </Container>
     </header>
