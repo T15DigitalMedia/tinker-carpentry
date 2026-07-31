@@ -1,3 +1,14 @@
+# [1.2.0](https://github.com/T15DigitalMedia/tinker-carpentry/compare/v1.1.0...v1.2.0) (2026-07-31)
+
+
+### Features
+
+* **shop:** add infinite scrolling ([0fa208c](https://github.com/T15DigitalMedia/tinker-carpentry/commit/0fa208cda38360cb48c24d7910031f30fd75a907))
+* **shop:** add product detail page ([9113b69](https://github.com/T15DigitalMedia/tinker-carpentry/commit/9113b69757a1710516d9fc1ed1fb76875509328a))
+* **shop:** add public facing shop with product filtering and sorting ([809f0ce](https://github.com/T15DigitalMedia/tinker-carpentry/commit/809f0ce89d59e0e12a831d80a3cba950ae8794c7))
+* **shop:** add responsive nav and seo ([288cfbc](https://github.com/T15DigitalMedia/tinker-carpentry/commit/288cfbc66168da7cc6ddaf6b5d8ca867e81181ec))
+* **shop:** updated landing page with newest items section ([e30a251](https://github.com/T15DigitalMedia/tinker-carpentry/commit/e30a25111751d7111f0128cb404cdd7febaff116))
+
 # [1.1.0](https://github.com/T15DigitalMedia/tinker-carpentry/compare/v1.0.0...v1.1.0) (2026-07-31)
 
 
