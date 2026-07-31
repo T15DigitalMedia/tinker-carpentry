@@ -1,9 +1,8 @@
 import Link from "next/link";
 import { createClient } from "@/lib/supabase/server";
-import { listStorefrontProducts, listPrimaryProductImages, type StorefrontSort } from "@/lib/products";
+import { listStorefrontProductsPage, toProductCardData, type StorefrontFilters, type StorefrontSort } from "@/lib/products";
 import { listTags } from "@/lib/tags";
-import { getProductImageUrl } from "@/lib/storage";
-import { ProductCard } from "@/components/shop/product-card";
+import { InfiniteProductGrid } from "@/components/shop/infinite-product-grid";
 import { Container } from "@/components/ui/container";
 import { Button } from "@/components/ui/button";
 
@@ -35,21 +34,20 @@ export default async function ShopPage({
   const minPrice = min ? Math.round(Number(min) * 100) : undefined;
   const maxPrice = max ? Math.round(Number(max) * 100) : undefined;
 
-  const [products, tags] = await Promise.all([
-    listStorefrontProducts(supabase, {
-      search: q,
-      tagSlug: tag,
-      minPrice: minPrice != null && Number.isFinite(minPrice) ? minPrice : undefined,
-      maxPrice: maxPrice != null && Number.isFinite(maxPrice) ? maxPrice : undefined,
-      sort: sort as StorefrontSort | undefined,
-    }),
+  const filters: StorefrontFilters = {
+    search: q,
+    tagSlug: tag,
+    minPrice: minPrice != null && Number.isFinite(minPrice) ? minPrice : undefined,
+    maxPrice: maxPrice != null && Number.isFinite(maxPrice) ? maxPrice : undefined,
+    sort: sort as StorefrontSort | undefined,
+  };
+
+  const [{ products, hasMore }, tags] = await Promise.all([
+    listStorefrontProductsPage(supabase, filters, 0),
     listTags(supabase),
   ]);
 
-  const primaryImages = await listPrimaryProductImages(
-    supabase,
-    products.map((product) => product.id),
-  );
+  const initialCards = await toProductCardData(supabase, products);
 
   function buildHref(overrides: Partial<ShopSearchParams>) {
     const merged = { q, tag, min, max, sort, ...overrides };
@@ -141,23 +139,12 @@ export default async function ShopPage({
           ))}
         </div>
 
-        <div className="mt-8 grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
-          {products.map((product, index) => {
-            const image = primaryImages[product.id];
-            return (
-              <ProductCard
-                key={product.id}
-                product={product}
-                imageUrl={image ? getProductImageUrl(supabase, image.storage_path) : undefined}
-                imageAlt={image?.alt ?? product.name}
-                eagerLoad={index < 3}
-              />
-            );
-          })}
-          {products.length === 0 && (
-            <p className="col-span-full py-12 text-center text-ink-3">No products match your filters.</p>
-          )}
-        </div>
+        <InfiniteProductGrid
+          key={`${q ?? ""}|${tag ?? ""}|${min ?? ""}|${max ?? ""}|${sort ?? ""}`}
+          initialCards={initialCards}
+          initialHasMore={hasMore}
+          filters={filters}
+        />
       </div>
     </Container>
   );
