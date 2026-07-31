@@ -71,7 +71,7 @@ export function ProductForm({
 
       <div className="grid grid-cols-2 gap-5">
         <label className={labelClass}>
-          Price (USD)
+          Price (CAD)
           <input
             type="number"
             name="price"
@@ -84,7 +84,7 @@ export function ProductForm({
           {fieldErrors.price && <span className={errorClass}>{fieldErrors.price[0]}</span>}
         </label>
         <label className={labelClass}>
-          Sale price (USD, optional)
+          Sale price (CAD, optional)
           <input
             type="number"
             name="sale_price"

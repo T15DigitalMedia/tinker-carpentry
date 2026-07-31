@@ -507,7 +507,7 @@
         <tr><td class="k">Hosting</td><td class="v">Vercel</td><td class="v">Phase 0 spike tried Cloudflare Workers via the OpenNext adapter first (its free egress suits an image-heavy catalog) but hit a hard local build wall: <code>workerd</code> requires macOS 13.5+ (this dev machine is on 12.6) or a glibc-linux container with a modern Docker runtime, neither available here. Vercel builds and runs natively with zero extra tooling — first-party Next.js support, free preview deploys per push. Re-visit Cloudflare later if egress costs become material at scale.</td><td><span class="pill decided">Decided</span></td></tr>
         <tr><td class="k">Search / filter</td><td class="v">Postgres + indexes</td><td class="v">Indexed columns for price/tags; <code>pg_trgm</code> or full-text for name search. No external search engine at v1.</td><td><span class="pill rec">Recommended</span></td></tr>
         <tr><td class="k">Monitoring</td><td class="v">Sentry + web analytics</td><td class="v">Error tracking (esp. the webhook) and basic traffic/conversion signals; analytics provider follows the host.</td><td><span class="pill rec">Recommended</span></td></tr>
-        <tr><td class="k">Tax &amp; currency</td><td class="v">Stripe Tax</td><td class="v">Single currency v1; Stripe computes tax at checkout rather than hand-rolling rates.</td><td><span class="pill decided">Decided</span></td></tr>
+        <tr><td class="k">Tax &amp; currency</td><td class="v">Stripe Tax · CAD</td><td class="v">Single currency v1, enforced as CAD throughout (admin pricing, storefront, Stripe Checkout Sessions); Stripe computes tax at checkout rather than hand-rolling rates.</td><td><span class="pill decided">Decided</span></td></tr>
         <tr><td class="k">Fulfillment</td><td class="v">Local pickup (v1)</td><td class="v">No carrier shipping at launch — orders are collected in person. Schema kept shipping-ready (weights/dimensions) so flat-rate or weight/zone can slot in later.</td><td><span class="pill decided">Decided</span></td></tr>
         <tr><td class="k">Customer accounts</td><td class="v">Guest checkout + optional account</td><td class="v">Minimal required info to buy; account creation is offered (not required) for easier reorders &amp; order history.</td><td><span class="pill decided">Decided</span></td></tr>
         <tr><td class="k">Product model</td><td class="v">One SKU per product</td><td class="v">No variant matrix — a different size/version is listed as its own product. Simpler stock, pricing, and reviews.</td><td><span class="pill decided">Decided</span></td></tr>
@@ -896,7 +896,7 @@
           <li><b>Guest vs. accounts</b><span><b class="ans">→ Guest checkout, minimal info.</b> Account creation offered but optional.</span></li>
           <li><b>Product variants</b><span><b class="ans">→ One SKU per product.</b> Sizes/versions listed separately; variants table dropped.</span></li>
           <li><b>Made-to-order</b><span><b class="ans">→ Per-product flag + lead time.</b> Still stock-counted; longer fulfillment shown to buyers.</span></li>
-          <li><b>Tax &amp; currency</b><span><b class="ans">→ Stripe Tax, single currency.</b></span></li>
+          <li><b>Tax &amp; currency</b><span><b class="ans">→ Stripe Tax, single currency: CAD.</b></span></li>
           <li><b>Review policy</b><span><b class="ans">→ Verified purchase + pre-moderation.</b></span></li>
           <li><b>Inventory</b><span><b class="ans">→ Decrement on payment.</b> Guarded conditional update.</span></li>
         </ul>

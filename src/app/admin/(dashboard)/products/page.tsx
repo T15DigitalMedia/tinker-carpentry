@@ -2,10 +2,7 @@ import Link from "next/link";
 import { createClient } from "@/lib/supabase/server";
 import { listProducts, LOW_STOCK_THRESHOLD, type ProductSort } from "@/lib/products";
 import { Button } from "@/components/ui/button";
-
-function formatPrice(cents: number) {
-  return (cents / 100).toLocaleString("en-US", { style: "currency", currency: "USD" });
-}
+import { formatPrice } from "@/lib/currency";
 
 export default async function AdminProductsPage({
   searchParams,
