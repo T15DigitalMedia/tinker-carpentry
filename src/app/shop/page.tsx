@@ -1,3 +1,4 @@
+import type { Metadata } from "next";
 import Link from "next/link";
 import { createClient } from "@/lib/supabase/server";
 import { listStorefrontProductsPage, toProductCardData, type StorefrontFilters, type StorefrontSort } from "@/lib/products";
@@ -5,6 +6,11 @@ import { listTags } from "@/lib/tags";
 import { InfiniteProductGrid } from "@/components/shop/infinite-product-grid";
 import { Container } from "@/components/ui/container";
 import { Button } from "@/components/ui/button";
+
+export const metadata: Metadata = {
+  title: "Shop",
+  description: "Browse handmade carpentry — filter by price, tag, or name.",
+};
 
 type ShopSearchParams = {
   q?: string;

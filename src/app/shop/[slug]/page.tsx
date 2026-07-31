@@ -1,3 +1,4 @@
+import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
@@ -7,6 +8,34 @@ import { getProductImageUrl } from "@/lib/storage";
 import { formatPrice } from "@/lib/currency";
 import { Container } from "@/components/ui/container";
 import { ProductGallery } from "@/components/shop/product-gallery";
+
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<{ slug: string }>;
+}): Promise<Metadata> {
+  const { slug } = await params;
+  const supabase = await createClient();
+
+  const product = await getProductBySlug(supabase, slug);
+  if (!product) return {};
+
+  const description = product.description ?? `${product.name} — handmade carpentry from Tinker Carpentry.`;
+  const images = await getProductImages(supabase, product.id);
+  const primaryImage = images[0];
+  const imageUrl = primaryImage ? getProductImageUrl(supabase, primaryImage.storage_path) : undefined;
+
+  return {
+    title: product.name,
+    description,
+    alternates: { canonical: `/shop/${product.slug}` },
+    openGraph: {
+      title: product.name,
+      description,
+      images: imageUrl ? [{ url: imageUrl }] : undefined,
+    },
+  };
+}
 
 function getStockStatus(stock: number) {
   if (stock <= 0) {
