@@ -1,26 +1,50 @@
 @import "tailwindcss";
 
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  /* design tokens — change these values to re-theme the whole app */
+  --paper: #e7e3d7;
+  --paper-2: #ded9cb;
+  --panel: #f1eee5;
+  --ink: #182634;
+  --ink-2: #42546a;
+  --ink-3: #6c7a88;
+  --line: #c2bba9;
+  --line-strong: #a69e8a;
+  --walnut: #7c4a22;
+  --walnut-2: #9a6132;
+  --cover: #152230;
+  --ok: #3d6a4e;
+  --open: #a9711a;
+  --focus: #b5793a;
+  --ui-radius: 3px;
+  --ui-maxw: 1080px;
 }
 
 @theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
-}
+  --color-paper: var(--paper);
+  --color-paper-2: var(--paper-2);
+  --color-panel: var(--panel);
+  --color-ink: var(--ink);
+  --color-ink-2: var(--ink-2);
+  --color-ink-3: var(--ink-3);
+  --color-line: var(--line);
+  --color-line-strong: var(--line-strong);
+  --color-walnut: var(--walnut);
+  --color-walnut-2: var(--walnut-2);
+  --color-cover: var(--cover);
+  --color-ok: var(--ok);
+  --color-open: var(--open);
+  --color-focus: var(--focus);
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+  --radius-ui: var(--ui-radius);
+
+  --font-sans: var(--font-plex-sans);
+  --font-serif: var(--font-fraunces);
+  --font-mono: var(--font-plex-mono);
 }
 
 body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  background: var(--paper);
+  color: var(--ink);
+  font-family: var(--font-sans);
 }

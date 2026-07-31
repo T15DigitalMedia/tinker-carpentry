@@ -1,5 +1,6 @@
 import type { NextConfig } from "next";
 import path from "path";
+import { withSentryConfig } from "@sentry/nextjs";
 
 const nextConfig: NextConfig = {
   turbopack: {
@@ -7,4 +8,8 @@ const nextConfig: NextConfig = {
   },
 };
 
-export default nextConfig;
+export default withSentryConfig(nextConfig, {
+  // Source map upload needs SENTRY_ORG / SENTRY_PROJECT / SENTRY_AUTH_TOKEN;
+  // silently skipped until those are added (see Phase 7 hardening).
+  silent: true,
+});
