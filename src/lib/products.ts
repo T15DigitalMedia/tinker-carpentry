@@ -150,6 +150,17 @@ export async function getProduct(supabase: SupabaseClient<Database>, id: string)
   return data;
 }
 
+export async function getProductBySlug(supabase: SupabaseClient<Database>, slug: string) {
+  const { data, error } = await supabase
+    .from("products")
+    .select("*")
+    .eq("slug", slug)
+    .eq("is_active", true)
+    .maybeSingle();
+  if (error) throw error;
+  return data;
+}
+
 export async function getProductImages(supabase: SupabaseClient<Database>, productId: string) {
   const { data, error } = await supabase
     .from("product_images")
