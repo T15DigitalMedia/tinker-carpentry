@@ -114,7 +114,7 @@ export function ProductImageManager({
             <img
               src={publicUrl(image.storage_path)}
               alt={image.alt ?? ""}
-              className="aspect-square w-full rounded-ui border border-line object-cover"
+              className="aspect-square w-full rounded-ui border border-line object-cover shadow-ui-sm"
             />
             <div className="flex items-center justify-between font-mono text-xs uppercase tracking-wider text-ink-3">
               <div className="flex gap-1">
@@ -149,7 +149,7 @@ export function ProductImageManager({
       </div>
 
       <label
-        className={`inline-flex w-fit cursor-pointer items-center justify-center rounded-ui border border-line-strong px-4 py-2 text-sm font-medium text-ink hover:bg-panel ${isPending ? "pointer-events-none opacity-50" : ""}`}
+        className={`inline-flex w-fit cursor-pointer items-center justify-center rounded-ui border border-line-strong px-4 py-2.5 text-sm font-medium text-ink transition-colors hover:bg-panel ${isPending ? "pointer-events-none opacity-50" : ""}`}
       >
         <input
           type="file"

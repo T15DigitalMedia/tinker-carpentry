@@ -33,7 +33,7 @@ export default async function EditProductPage({
   return (
     <div>
       <div className="flex items-center justify-between">
-        <h1 className="font-serif text-2xl font-medium text-ink">{product.name}</h1>
+        <h1 className="font-serif text-3xl font-medium text-ink">{product.name}</h1>
         <form action={boundDelete}>
           <button
             type="submit"
@@ -54,7 +54,7 @@ export default async function EditProductPage({
         />
       </div>
 
-      <div className="mt-10 max-w-2xl">
+      <div className="mt-10 max-w-2xl rounded-ui border border-line bg-paper p-6 shadow-ui-sm">
         <h2 className="font-serif text-xl font-medium text-ink">Photos</h2>
         <ProductImageManager productId={id} initialImages={images} />
       </div>

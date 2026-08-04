@@ -39,12 +39,12 @@ export async function generateMetadata({
 
 function getStockStatus(stock: number) {
   if (stock <= 0) {
-    return { label: "Out of stock", tone: "border-open text-open" };
+    return { label: "Out of stock", tone: "border-open/40 bg-open/10 text-open" };
   }
   if (stock <= LOW_STOCK_THRESHOLD) {
-    return { label: `Only ${stock} left`, tone: "border-open text-open" };
+    return { label: `Only ${stock} left`, tone: "border-open/40 bg-open/10 text-open" };
   }
-  return { label: "In stock", tone: "border-ok text-ok" };
+  return { label: "In stock", tone: "border-ok/40 bg-ok/10 text-ok" };
 }
 
 export default async function ProductDetailPage({
@@ -72,16 +72,22 @@ export default async function ProductDetailPage({
 
   return (
     <Container>
-      <div className="py-10">
-        <Link href="/shop" className="font-mono text-xs uppercase tracking-wider text-ink-3 hover:text-ink">
-          ← Back to shop
+      <div className="py-14">
+        <Link
+          href="/shop"
+          className="group inline-flex items-center gap-1.5 font-mono text-xs uppercase tracking-wider text-ink-3 transition-colors hover:text-ink"
+        >
+          <span aria-hidden="true" className="transition-transform group-hover:-translate-x-0.5">
+            ←
+          </span>
+          Back to shop
         </Link>
 
-        <div className="mt-6 grid gap-10 md:grid-cols-2">
+        <div className="mt-8 grid gap-12 md:grid-cols-2">
           <ProductGallery images={gallery} fallbackAlt={product.name} />
 
-          <div className="flex flex-col gap-5">
-            <h1 className="font-serif text-3xl font-medium text-ink">{product.name}</h1>
+          <div className="flex flex-col gap-6">
+            <h1 className="font-serif text-4xl font-medium text-ink">{product.name}</h1>
 
             <div className="flex items-baseline gap-3">
               <span className="text-2xl font-medium text-ink">
@@ -94,12 +100,12 @@ export default async function ProductDetailPage({
 
             <div className="flex flex-wrap items-center gap-3">
               {product.made_to_order && (
-                <span className="inline-flex w-fit items-center rounded-ui border border-walnut px-2 py-1 font-mono text-[10px] uppercase tracking-wider text-walnut">
+                <span className="inline-flex w-fit items-center rounded-ui-sm border border-walnut/40 bg-walnut/10 px-2.5 py-1 font-mono text-[10px] uppercase tracking-wider text-walnut">
                   Made to order
                 </span>
               )}
               <span
-                className={`inline-flex w-fit items-center rounded-ui border px-2 py-1 font-mono text-[10px] uppercase tracking-wider ${stockStatus.tone}`}
+                className={`inline-flex w-fit items-center rounded-ui-sm border px-2.5 py-1 font-mono text-[10px] uppercase tracking-wider ${stockStatus.tone}`}
               >
                 {stockStatus.label}
               </span>
@@ -110,15 +116,15 @@ export default async function ProductDetailPage({
               )}
             </div>
 
-            {product.description && <p className="text-ink-2">{product.description}</p>}
+            {product.description && <p className="leading-relaxed text-ink-2">{product.description}</p>}
 
             {tags.length > 0 && (
-              <div className="flex flex-wrap gap-2">
+              <div className="flex flex-wrap gap-2 border-t border-line pt-6">
                 {tags.map((tag) => (
                   <Link
                     key={tag.id}
                     href={`/shop?tag=${tag.slug}`}
-                    className="rounded-ui border border-line-strong px-3 py-1 font-mono text-[10px] uppercase tracking-wider text-ink-2 hover:border-walnut hover:text-walnut"
+                    className="rounded-ui-sm border border-line-strong px-3 py-1 font-mono text-[10px] uppercase tracking-wider text-ink-2 transition-colors hover:border-walnut hover:text-walnut"
                   >
                     {tag.name}
                   </Link>
