@@ -9,19 +9,19 @@ export default async function TagsPage() {
 
   return (
     <div className="max-w-xl">
-      <h1 className="font-serif text-2xl font-medium text-ink">Tags</h1>
+      <h1 className="font-serif text-3xl font-medium text-ink">Tags</h1>
 
-      <div className="mt-6">
+      <div className="mt-6 rounded-ui border border-line bg-paper p-5 shadow-ui-sm">
         <NewTagForm />
       </div>
 
-      <ul className="mt-8 flex flex-col gap-1">
+      <ul className="mt-6 flex flex-col overflow-hidden rounded-ui border border-line bg-paper shadow-ui-sm">
         {tags.map((tag) => {
           const boundDelete = deleteTagAction.bind(null, tag.id);
           return (
             <li
               key={tag.id}
-              className="flex items-center justify-between border-t border-line py-2 text-sm text-ink first:border-none"
+              className="flex items-center justify-between border-b border-line px-5 py-3 text-sm text-ink last:border-none hover:bg-panel/60"
             >
               {tag.name}
               <form action={boundDelete}>
@@ -35,7 +35,7 @@ export default async function TagsPage() {
             </li>
           );
         })}
-        {tags.length === 0 && <li className="py-2 text-sm text-ink-3">No tags yet.</li>}
+        {tags.length === 0 && <li className="px-5 py-4 text-sm text-ink-3">No tags yet.</li>}
       </ul>
     </div>
   );

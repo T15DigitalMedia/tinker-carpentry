@@ -9,7 +9,7 @@ export default async function NewProductPage() {
 
   return (
     <div>
-      <h1 className="font-serif text-2xl font-medium text-ink">New product</h1>
+      <h1 className="font-serif text-3xl font-medium text-ink">New product</h1>
       <div className="mt-6">
         <ProductForm action={createProductAction} allTags={tags} submitLabel="Create product" />
       </div>

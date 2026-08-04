@@ -14,7 +14,7 @@ export function ProductGallery({
 
   if (images.length === 0) {
     return (
-      <div className="flex aspect-square w-full items-center justify-center rounded-ui border border-line bg-panel font-mono text-xs uppercase tracking-wider text-ink-3">
+      <div className="flex aspect-square w-full items-center justify-center rounded-ui border border-line bg-panel shadow-ui-sm font-mono text-xs uppercase tracking-wider text-ink-3">
         No photos yet
       </div>
     );
@@ -24,7 +24,7 @@ export function ProductGallery({
 
   return (
     <div className="flex flex-col gap-3">
-      <div className="relative aspect-square w-full overflow-hidden rounded-ui border border-line bg-paper-2">
+      <div className="relative aspect-square w-full overflow-hidden rounded-ui border border-line bg-paper-2 shadow-ui-md">
         <Image
           src={active.url}
           alt={active.alt || fallbackAlt}
@@ -35,7 +35,7 @@ export function ProductGallery({
         />
       </div>
       {images.length > 1 && (
-        <div className="flex gap-2">
+        <div className="flex gap-3">
           {images.map((image, index) => (
             <button
               key={image.url}
@@ -43,8 +43,10 @@ export function ProductGallery({
               onClick={() => setActiveIndex(index)}
               aria-label={`Show photo ${index + 1}`}
               aria-current={index === activeIndex}
-              className={`relative aspect-square w-16 overflow-hidden rounded-ui border transition-colors ${
-                index === activeIndex ? "border-walnut" : "border-line hover:border-line-strong"
+              className={`relative aspect-square w-16 overflow-hidden rounded-ui-sm border transition-all ${
+                index === activeIndex
+                  ? "border-walnut ring-2 ring-walnut/30"
+                  : "border-line hover:border-line-strong"
               }`}
             >
               <Image src={image.url} alt="" fill sizes="64px" className="object-cover" />

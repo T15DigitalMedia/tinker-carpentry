@@ -26,7 +26,8 @@ const sortLinks: { label: string; value: StorefrontSort }[] = [
   { label: "Newest", value: "newest" },
 ];
 
-const inputClass = "rounded-ui border border-line-strong bg-panel px-3 py-2 text-sm text-ink";
+const inputClass =
+  "rounded-ui border border-line-strong bg-paper px-3 py-2.5 text-sm text-ink transition-colors outline-none focus:border-focus focus:ring-2 focus:ring-focus/25";
 const labelClass = "font-mono text-xs uppercase tracking-wider text-ink-3";
 
 export default async function ShopPage({
@@ -67,82 +68,84 @@ export default async function ShopPage({
 
   return (
     <Container>
-      <div className="py-10">
-        <h1 className="font-serif text-3xl font-medium text-ink">Shop</h1>
+      <div className="py-14">
+        <h1 className="font-serif text-4xl font-medium text-ink">Shop</h1>
         <p className="mt-2 text-ink-2">Handmade carpentry, made to order and ready-made.</p>
 
-        <form className="mt-8 flex flex-wrap items-end gap-4" method="get">
-          <div className="flex flex-col gap-1">
-            <label htmlFor="q" className={labelClass}>
-              Search
-            </label>
-            <input
-              id="q"
-              type="search"
-              name="q"
-              defaultValue={q}
-              placeholder="Product name..."
-              className={inputClass}
-            />
-          </div>
-          <div className="flex flex-col gap-1">
-            <label htmlFor="tag" className={labelClass}>
-              Tag
-            </label>
-            <select id="tag" name="tag" defaultValue={tag ?? ""} className={inputClass}>
-              <option value="">All</option>
-              {tags.map((t) => (
-                <option key={t.id} value={t.slug}>
-                  {t.name}
-                </option>
-              ))}
-            </select>
-          </div>
-          <div className="flex flex-col gap-1">
-            <label htmlFor="min" className={labelClass}>
-              Min price
-            </label>
-            <input
-              id="min"
-              type="number"
-              name="min"
-              min="0"
-              step="0.01"
-              defaultValue={min}
-              className={`w-28 ${inputClass}`}
-            />
-          </div>
-          <div className="flex flex-col gap-1">
-            <label htmlFor="max" className={labelClass}>
-              Max price
-            </label>
-            <input
-              id="max"
-              type="number"
-              name="max"
-              min="0"
-              step="0.01"
-              defaultValue={max}
-              className={`w-28 ${inputClass}`}
-            />
-          </div>
-          {sort && <input type="hidden" name="sort" value={sort} />}
-          <Button type="submit" variant="secondary">
-            Apply
-          </Button>
-        </form>
+        <div className="mt-8 rounded-ui border border-line bg-panel p-6 shadow-ui-sm">
+          <form className="flex flex-wrap items-end gap-4" method="get">
+            <div className="flex flex-col gap-1">
+              <label htmlFor="q" className={labelClass}>
+                Search
+              </label>
+              <input
+                id="q"
+                type="search"
+                name="q"
+                defaultValue={q}
+                placeholder="Product name..."
+                className={inputClass}
+              />
+            </div>
+            <div className="flex flex-col gap-1">
+              <label htmlFor="tag" className={labelClass}>
+                Tag
+              </label>
+              <select id="tag" name="tag" defaultValue={tag ?? ""} className={inputClass}>
+                <option value="">All</option>
+                {tags.map((t) => (
+                  <option key={t.id} value={t.slug}>
+                    {t.name}
+                  </option>
+                ))}
+              </select>
+            </div>
+            <div className="flex flex-col gap-1">
+              <label htmlFor="min" className={labelClass}>
+                Min price
+              </label>
+              <input
+                id="min"
+                type="number"
+                name="min"
+                min="0"
+                step="0.01"
+                defaultValue={min}
+                className={`w-28 ${inputClass}`}
+              />
+            </div>
+            <div className="flex flex-col gap-1">
+              <label htmlFor="max" className={labelClass}>
+                Max price
+              </label>
+              <input
+                id="max"
+                type="number"
+                name="max"
+                min="0"
+                step="0.01"
+                defaultValue={max}
+                className={`w-28 ${inputClass}`}
+              />
+            </div>
+            {sort && <input type="hidden" name="sort" value={sort} />}
+            <Button type="submit" variant="secondary">
+              Apply
+            </Button>
+          </form>
 
-        <div className="mt-4 flex items-center gap-3 font-mono text-xs uppercase tracking-wider text-ink-3">
-          Sort:
-          {sortLinks.map((s) => (
-            <Link
-              key={s.value}
-              href={buildHref({ sort: s.value })}
-              className={sort === s.value || (!sort && s.value === "name") ? "text-walnut" : "hover:text-ink"}
-            >
-              {s.label}
-            </Link>
-          ))}
+          <div className="mt-5 flex items-center gap-3 border-t border-line pt-4 font-mono text-xs uppercase tracking-wider text-ink-3">
+            Sort:
+            {sortLinks.map((s) => (
+              <Link
+                key={s.value}
+                href={buildHref({ sort: s.value })}
+                className={sort === s.value || (!sort && s.value === "name") ? "text-walnut" : "hover:text-ink"}
+              >
+                {s.label}
+              </Link>
+            ))}
+          </div>
         </div>
 
         <InfiniteProductGrid

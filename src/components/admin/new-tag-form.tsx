@@ -16,7 +16,7 @@ export function NewTagForm() {
           name="name"
           required
           placeholder="Reclaimed oak"
-          className="rounded-ui border border-line-strong bg-panel px-3 py-2 text-sm text-ink"
+          className="rounded-ui border border-line-strong bg-panel px-3 py-2.5 text-sm text-ink outline-none transition-colors focus:border-focus focus:ring-2 focus:ring-focus/25"
         />
       </label>
       <Button type="submit" disabled={isPending}>

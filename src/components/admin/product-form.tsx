@@ -21,9 +21,11 @@ function centsToDollarsInput(cents: number | null | undefined) {
   return cents == null ? "" : (cents / 100).toFixed(2);
 }
 
-const inputClass = "w-full rounded-ui border border-line-strong bg-panel px-3 py-2 text-sm text-ink";
-const labelClass = "flex flex-col gap-1 text-sm text-ink-2";
+const inputClass =
+  "w-full rounded-ui border border-line-strong bg-panel px-3 py-2.5 text-sm text-ink outline-none transition-colors focus:border-focus focus:ring-2 focus:ring-focus/25";
+const labelClass = "flex flex-col gap-1.5 text-sm font-medium text-ink-2";
 const errorClass = "text-xs text-red-700";
+const checkboxClass = "h-4 w-4 accent-walnut";
 
 export function ProductForm({
   action,
@@ -42,7 +44,10 @@ export function ProductForm({
   const fieldErrors = state?.fieldErrors ?? {};
 
   return (
-    <form action={formAction} className="flex max-w-2xl flex-col gap-5">
+    <form
+      action={formAction}
+      className="flex max-w-2xl flex-col gap-5 rounded-ui border border-line bg-paper p-6 shadow-ui-sm"
+    >
       {state?.error && <p className={errorClass}>{state.error}</p>}
 
       <label className={labelClass}>
@@ -125,12 +130,17 @@ export function ProductForm({
       </div>
 
       <label className="flex items-center gap-2 text-sm text-ink">
-        <input type="checkbox" name="is_active" defaultChecked={product?.is_active ?? true} />
+        <input type="checkbox" name="is_active" defaultChecked={product?.is_active ?? true} className={checkboxClass} />
         Listed (visible in the storefront)
       </label>
 
       <label className="flex items-center gap-2 text-sm text-ink">
-        <input type="checkbox" name="made_to_order" defaultChecked={product?.made_to_order ?? false} />
+        <input
+          type="checkbox"
+          name="made_to_order"
+          defaultChecked={product?.made_to_order ?? false}
+          className={checkboxClass}
+        />
         Made to order
       </label>
 
@@ -157,6 +167,7 @@ export function ProductForm({
                   name="tags"
                   value={tag.id}
                   defaultChecked={selectedTagIds.includes(tag.id)}
+                  className={checkboxClass}
                 />
                 {tag.name}
               </label>

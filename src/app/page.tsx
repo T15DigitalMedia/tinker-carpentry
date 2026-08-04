@@ -22,34 +22,45 @@ export default async function Home() {
 
   return (
     <>
-      <section className="border-b border-line bg-panel">
+      <section className="bg-grain relative overflow-hidden border-b border-line bg-linear-to-b from-panel to-paper">
         <Container>
-          <div className="flex flex-col items-start gap-4 py-24">
-            <p className="font-mono text-xs uppercase tracking-wider text-walnut">Handmade Carpentry</p>
-            <h1 className="max-w-xl font-serif text-4xl font-medium text-ink sm:text-5xl">
+          <div className="flex flex-col items-start gap-6 py-28 sm:py-36">
+            <p className="font-mono text-xs uppercase tracking-[0.2em] text-walnut">Handmade Carpentry</p>
+            <h1 className="max-w-2xl font-serif text-5xl font-medium leading-[1.05] text-ink sm:text-6xl">
               Built by hand, made to last.
             </h1>
-            <p className="max-w-lg text-ink-2">
+            <p className="max-w-lg text-lg text-ink-2">
               Furniture and woodwork crafted one piece at a time — some ready to pick up, some made to order.
             </p>
             <Link href="/shop">
               <Button>Shop the catalog</Button>
             </Link>
+
+            <div className="mt-6 flex flex-wrap items-center gap-x-8 gap-y-2 font-mono text-xs uppercase tracking-wider text-ink-3">
+              <span>Handcrafted in-house</span>
+              <span className="hidden h-1 w-1 rounded-full bg-line-strong sm:block" />
+              <span>Made to order</span>
+              <span className="hidden h-1 w-1 rounded-full bg-line-strong sm:block" />
+              <span>Local pickup available</span>
+            </div>
           </div>
         </Container>
       </section>
 
       <Container>
-        <section className="py-16">
+        <section className="py-20">
           <div className="flex items-baseline justify-between">
-            <h2 className="font-serif text-2xl font-medium text-ink">New arrivals</h2>
+            <div>
+              <h2 className="font-serif text-3xl font-medium text-ink">New arrivals</h2>
+              <p className="mt-2 text-ink-2">The latest pieces to come off the bench.</p>
+            </div>
             <Link href="/shop" className="font-mono text-xs uppercase tracking-wider text-ink-3 hover:text-ink">
               View all →
             </Link>
           </div>
 
           {newArrivals.length > 0 ? (
-            <div className="mt-8 grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
+            <div className="mt-10 grid grid-cols-1 gap-8 sm:grid-cols-2 lg:grid-cols-3">
               {newArrivals.map(({ product, imageUrl, imageAlt }, index) => (
                 <ProductCard
                   key={product.id}

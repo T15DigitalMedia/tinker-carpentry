@@ -25,7 +25,7 @@ export default async function AdminProductsPage({
   return (
     <div>
       <div className="flex items-center justify-between">
-        <h1 className="font-serif text-2xl font-medium text-ink">Products</h1>
+        <h1 className="font-serif text-3xl font-medium text-ink">Products</h1>
         <Link href="/admin/products/new">
           <Button>New product</Button>
         </Link>
@@ -37,7 +37,7 @@ export default async function AdminProductsPage({
           name="q"
           defaultValue={q}
           placeholder="Search by name..."
-          className="rounded-ui border border-line-strong bg-panel px-3 py-2 text-sm text-ink"
+          className="rounded-ui border border-line-strong bg-paper px-3 py-2.5 text-sm text-ink outline-none transition-colors focus:border-focus focus:ring-2 focus:ring-focus/25"
         />
         <Button type="submit" variant="secondary">
           Search
@@ -56,47 +56,49 @@ export default async function AdminProductsPage({
         </div>
       </form>
 
-      <table className="mt-6 w-full text-left text-sm">
-        <thead>
-          <tr className="border-b border-line-strong font-mono text-xs uppercase tracking-wider text-ink-3">
-            <th className="pb-2">Name</th>
-            <th className="pb-2">Price</th>
-            <th className="pb-2">Stock</th>
-            <th className="pb-2">Status</th>
-          </tr>
-        </thead>
-        <tbody>
-          {products.map((product) => (
-            <tr key={product.id} className="border-b border-line">
-              <td className="py-3">
-                <Link href={`/admin/products/${product.id}`} className="text-ink hover:text-walnut">
-                  {product.name}
-                </Link>
-              </td>
-              <td className="py-3 text-ink-2">
-                {formatPrice(product.sale_price ?? product.price)}
-                {product.sale_price != null && (
-                  <span className="ml-2 text-ink-3 line-through">{formatPrice(product.price)}</span>
-                )}
-              </td>
-              <td className="py-3">
-                <span className={product.stock <= LOW_STOCK_THRESHOLD ? "font-medium text-open" : "text-ink-2"}>
-                  {product.stock}
-                  {product.stock <= LOW_STOCK_THRESHOLD && " (low)"}
-                </span>
-              </td>
-              <td className="py-3 text-ink-2">{product.is_active ? "Active" : "Hidden"}</td>
+      <div className="mt-6 overflow-hidden rounded-ui border border-line bg-paper shadow-ui-sm">
+        <table className="w-full text-left text-sm">
+          <thead>
+            <tr className="border-b border-line bg-panel font-mono text-xs uppercase tracking-wider text-ink-3">
+              <th className="px-5 py-3">Name</th>
+              <th className="px-5 py-3">Price</th>
+              <th className="px-5 py-3">Stock</th>
+              <th className="px-5 py-3">Status</th>
             </tr>
-          ))}
-          {products.length === 0 && (
-            <tr>
-              <td colSpan={4} className="py-6 text-center text-ink-3">
-                No products yet.
-              </td>
-            </tr>
-          )}
-        </tbody>
-      </table>
+          </thead>
+          <tbody>
+            {products.map((product) => (
+              <tr key={product.id} className="border-b border-line last:border-none hover:bg-panel/60">
+                <td className="px-5 py-3">
+                  <Link href={`/admin/products/${product.id}`} className="text-ink hover:text-walnut">
+                    {product.name}
+                  </Link>
+                </td>
+                <td className="px-5 py-3 text-ink-2">
+                  {formatPrice(product.sale_price ?? product.price)}
+                  {product.sale_price != null && (
+                    <span className="ml-2 text-ink-3 line-through">{formatPrice(product.price)}</span>
+                  )}
+                </td>
+                <td className="px-5 py-3">
+                  <span className={product.stock <= LOW_STOCK_THRESHOLD ? "font-medium text-open" : "text-ink-2"}>
+                    {product.stock}
+                    {product.stock <= LOW_STOCK_THRESHOLD && " (low)"}
+                  </span>
+                </td>
+                <td className="px-5 py-3 text-ink-2">{product.is_active ? "Active" : "Hidden"}</td>
+              </tr>
+            ))}
+            {products.length === 0 && (
+              <tr>
+                <td colSpan={4} className="px-5 py-8 text-center text-ink-3">
+                  No products yet.
+                </td>
+              </tr>
+            )}
+          </tbody>
+        </table>
+      </div>
     </div>
   );
 }

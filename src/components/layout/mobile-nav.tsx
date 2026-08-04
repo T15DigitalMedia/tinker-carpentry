@@ -15,7 +15,7 @@ export function MobileNav() {
         aria-expanded={open}
         aria-controls="mobile-nav-panel"
         aria-label={open ? "Close menu" : "Open menu"}
-        className="flex h-9 w-9 flex-col items-center justify-center gap-1.5 rounded-ui border border-line-strong"
+        className="flex h-9 w-9 flex-col items-center justify-center gap-1.5 rounded-ui-sm border border-line-strong transition-colors hover:bg-panel"
       >
         <span
           className={`block h-px w-4 bg-ink transition-transform ${open ? "translate-y-[3.5px] rotate-45" : ""}`}
@@ -27,7 +27,10 @@ export function MobileNav() {
       </button>
 
       {open && (
-        <nav id="mobile-nav-panel" className="absolute inset-x-0 top-16 border-b border-line bg-paper">
+        <nav
+          id="mobile-nav-panel"
+          className="animate-drop-in absolute inset-x-0 top-18 border-b border-line bg-paper/95 shadow-ui-lg backdrop-blur-md"
+        >
           <ul className="flex flex-col divide-y divide-line px-5">
             {navLinks.map((link) => (
               <li key={link.href}>

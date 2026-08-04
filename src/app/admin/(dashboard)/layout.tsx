@@ -1,8 +1,8 @@
 import { redirect } from "next/navigation";
-import Link from "next/link";
 import { createClient } from "@/lib/supabase/server";
 import { Container } from "@/components/ui/container";
 import { AdminSignOutButton } from "@/components/admin/sign-out-button";
+import { AdminNavLink } from "@/components/admin/admin-nav-link";
 
 const adminNavLinks = [
   { href: "/admin", label: "Dashboard" },
@@ -36,22 +36,18 @@ export default async function AdminLayout({
 
   return (
     <div className="min-h-screen bg-panel">
-      <header className="border-b border-line bg-cover">
+      <header className="bg-grain bg-grain-dark sticky top-0 z-40 border-b border-black/10 bg-cover shadow-ui-md">
         <Container>
-          <div className="flex h-14 items-center justify-between">
-            <div className="flex items-center gap-6">
+          <div className="flex h-16 items-center justify-between">
+            <div className="flex items-center gap-8">
               <span className="font-mono text-xs uppercase tracking-wider text-paper">
                 Admin portal
               </span>
-              <nav className="flex items-center gap-4">
+              <nav className="flex items-center gap-5">
                 {adminNavLinks.map((link) => (
-                  <Link
-                    key={link.href}
-                    href={link.href}
-                    className="font-mono text-xs uppercase tracking-wider text-paper/70 hover:text-paper"
-                  >
+                  <AdminNavLink key={link.href} href={link.href}>
                     {link.label}
-                  </Link>
+                  </AdminNavLink>
                 ))}
               </nav>
             </div>
@@ -60,7 +56,7 @@ export default async function AdminLayout({
         </Container>
       </header>
       <Container>
-        <div className="py-10">{children}</div>
+        <div className="py-12">{children}</div>
       </Container>
     </div>
   );
