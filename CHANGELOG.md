@@ -1,3 +1,11 @@
+# [1.3.0](https://github.com/T15DigitalMedia/tinker-carpentry/compare/v1.2.0...v1.3.0) (2026-08-04)
+
+
+### Features
+
+* **branding:** update UI elements ([12c4eb2](https://github.com/T15DigitalMedia/tinker-carpentry/commit/12c4eb27d21cb5eaa9d2637626d402c752771a16))
+* **branding:** update UI elements ([731147a](https://github.com/T15DigitalMedia/tinker-carpentry/commit/731147a974c1bdf5f6674b41b608c97c77606813))
+
 # [1.2.0](https://github.com/T15DigitalMedia/tinker-carpentry/compare/v1.1.0...v1.2.0) (2026-07-31)
 
 
