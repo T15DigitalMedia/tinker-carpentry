@@ -8,6 +8,7 @@ import { getProductImageUrl } from "@/lib/storage";
 import { formatPrice } from "@/lib/currency";
 import { Container } from "@/components/ui/container";
 import { ProductGallery } from "@/components/shop/product-gallery";
+import { AddToCartForm } from "@/components/shop/add-to-cart-form";
 
 export async function generateMetadata({
   params,
@@ -115,6 +116,17 @@ export default async function ProductDetailPage({
                 </span>
               )}
             </div>
+
+            <AddToCartForm
+              productId={product.id}
+              slug={product.slug}
+              name={product.name}
+              price={product.price}
+              salePrice={product.sale_price}
+              imageUrl={gallery[0]?.url}
+              stock={product.stock}
+              madeToOrder={product.made_to_order}
+            />
 
             {product.description && <p className="leading-relaxed text-ink-2">{product.description}</p>}
 

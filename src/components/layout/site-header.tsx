@@ -2,6 +2,7 @@ import Link from "next/link";
 import { Container } from "@/components/ui/container";
 import { MobileNav } from "@/components/layout/mobile-nav";
 import { navLinks } from "@/components/layout/nav-links";
+import { CartToggleButton } from "@/components/cart/cart-toggle-button";
 
 export function SiteHeader() {
   return (
@@ -26,7 +27,10 @@ export function SiteHeader() {
               </Link>
             ))}
           </nav>
-          <MobileNav />
+          <div className="flex items-center gap-3">
+            <CartToggleButton />
+            <MobileNav />
+          </div>
         </div>
       </Container>
     </header>

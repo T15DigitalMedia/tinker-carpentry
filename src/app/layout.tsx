@@ -4,6 +4,7 @@ import { Analytics } from "@vercel/analytics/next";
 import { SiteHeader } from "@/components/layout/site-header";
 import { SiteFooter } from "@/components/layout/site-footer";
 import { CartProvider } from "@/components/cart/cart-provider";
+import { CartDrawer } from "@/components/cart/cart-drawer";
 import { SITE_NAME, SITE_URL, SITE_DESCRIPTION } from "@/lib/site";
 import "./globals.css";
 
@@ -59,6 +60,7 @@ export default function RootLayout({
           <SiteHeader />
           <main className="flex-1">{children}</main>
           <SiteFooter />
+          <CartDrawer />
         </CartProvider>
         <Analytics />
       </body>
