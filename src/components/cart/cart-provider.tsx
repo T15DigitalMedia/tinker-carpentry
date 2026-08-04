@@ -9,6 +9,11 @@ import {
   type CartItem,
 } from "@/lib/cart";
 
+export type AppliedCoupon = {
+  code: string;
+  discountCents: number;
+};
+
 type CartContextValue = {
   items: CartItem[];
   addItem: (item: Omit<CartItem, "quantity">, quantity?: number) => void;
@@ -17,6 +22,9 @@ type CartContextValue = {
   isOpen: boolean;
   openCart: () => void;
   closeCart: () => void;
+  coupon: AppliedCoupon | null;
+  setCoupon: (coupon: AppliedCoupon) => void;
+  clearCoupon: () => void;
 };
 
 const CartContext = createContext<CartContextValue | null>(null);
@@ -36,6 +44,10 @@ export function CartProvider({ children }: { children: ReactNode }) {
   // the very first paint — no server/client mismatch to patch up in an effect.
   const [items, setItems] = useState<CartItem[]>(readStoredCart);
   const [isOpen, setIsOpen] = useState(false);
+  // Not persisted: re-applying forces a fresh server-side check against the
+  // current subtotal rather than trusting a discount computed against a cart
+  // that may have since changed.
+  const [coupon, setCouponState] = useState<AppliedCoupon | null>(null);
 
   useEffect(() => {
     window.localStorage.setItem(CART_STORAGE_KEY, JSON.stringify(items));
@@ -44,15 +56,26 @@ export function CartProvider({ children }: { children: ReactNode }) {
   const value = useMemo<CartContextValue>(
     () => ({
       items,
-      addItem: (item, quantity = 1) => setItems((prev) => addCartItem(prev, item, quantity)),
-      updateQuantity: (productId, quantity) =>
-        setItems((prev) => updateCartItemQuantity(prev, productId, quantity)),
-      removeItem: (productId) => setItems((prev) => removeCartItem(prev, productId)),
+      addItem: (item, quantity = 1) => {
+        setItems((prev) => addCartItem(prev, item, quantity));
+        setCouponState(null);
+      },
+      updateQuantity: (productId, quantity) => {
+        setItems((prev) => updateCartItemQuantity(prev, productId, quantity));
+        setCouponState(null);
+      },
+      removeItem: (productId) => {
+        setItems((prev) => removeCartItem(prev, productId));
+        setCouponState(null);
+      },
       isOpen,
       openCart: () => setIsOpen(true),
       closeCart: () => setIsOpen(false),
+      coupon,
+      setCoupon: setCouponState,
+      clearCoupon: () => setCouponState(null),
     }),
-    [items, isOpen],
+    [items, isOpen, coupon],
   );
 
   return <CartContext.Provider value={value}>{children}</CartContext.Provider>;

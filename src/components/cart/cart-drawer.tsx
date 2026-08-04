@@ -1,20 +1,65 @@
 "use client";
 
 import Image from "next/image";
-import { useId, useState } from "react";
+import { useId, useState, useTransition } from "react";
 import { formatPrice } from "@/lib/currency";
 import { cartSubtotal } from "@/lib/cart";
 import { useCart } from "@/components/cart/cart-provider";
 import { Button } from "@/components/ui/button";
+import { applyCoupon } from "@/app/shop/actions";
+import { createCheckoutSession } from "@/app/checkout/actions";
+import type { CouponRejectionReason } from "@/lib/coupons";
+
+const REJECTION_MESSAGES: Record<CouponRejectionReason, string> = {
+  not_found: "That coupon code doesn't exist.",
+  inactive: "That coupon is no longer active.",
+  expired: "That coupon has expired.",
+  usage_limit_reached: "That coupon has reached its usage limit.",
+  below_minimum: "Your order doesn't meet this coupon's minimum.",
+};
 
 export function CartDrawer() {
-  const { items, isOpen, closeCart, updateQuantity, removeItem } = useCart();
+  const { items, isOpen, closeCart, updateQuantity, removeItem, coupon, setCoupon, clearCoupon } = useCart();
   const headingId = useId();
   const [couponCode, setCouponCode] = useState("");
+  const [couponError, setCouponError] = useState<string | null>(null);
+  const [isApplyingCoupon, startApplyingCoupon] = useTransition();
+  const [checkoutError, setCheckoutError] = useState<string | null>(null);
+  const [isCheckingOut, startCheckingOut] = useTransition();
 
   if (!isOpen) return null;
 
   const subtotal = cartSubtotal(items);
+  const discountCents = coupon?.discountCents ?? 0;
+  const total = Math.max(0, subtotal - discountCents);
+
+  function handleApplyCoupon() {
+    setCouponError(null);
+    startApplyingCoupon(async () => {
+      const result = await applyCoupon(couponCode, subtotal);
+      if (result.valid) {
+        setCoupon({ code: couponCode.trim(), discountCents: result.discountCents });
+        setCouponCode("");
+      } else {
+        setCouponError(REJECTION_MESSAGES[result.reason]);
+      }
+    });
+  }
+
+  function handleCheckout() {
+    setCheckoutError(null);
+    startCheckingOut(async () => {
+      const result = await createCheckoutSession({
+        items: items.map((item) => ({ productId: item.productId, quantity: item.quantity })),
+        couponCode: coupon?.code,
+      });
+      if (result.ok) {
+        window.location.href = result.url;
+      } else {
+        setCheckoutError(result.error);
+      }
+    });
+  }
 
   return (
     <div className="fixed inset-0 z-50 flex justify-end">
@@ -97,30 +142,68 @@ export function CartDrawer() {
         )}
 
         <div className="border-t border-line px-5 py-4">
-          {/* Server-side validation and the discount it applies land in t3-3. */}
-          <form
-            onSubmit={(event) => event.preventDefault()}
-            className="mb-4 flex gap-2"
-          >
-            <input
-              type="text"
-              value={couponCode}
-              onChange={(event) => setCouponCode(event.target.value)}
-              placeholder="Coupon code"
-              className="min-w-0 flex-1 rounded-ui-sm border border-line-strong bg-paper px-3 py-2 text-sm text-ink placeholder:text-ink-3 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-focus"
-            />
-            <Button type="submit" variant="secondary" disabled={couponCode.trim().length === 0}>
-              Apply
-            </Button>
-          </form>
+          {coupon ? (
+            <div className="mb-4 flex items-center justify-between rounded-ui-sm border border-ok/40 bg-ok/10 px-3 py-2">
+              <span className="font-mono text-xs uppercase tracking-wider text-ok">{coupon.code} applied</span>
+              <button
+                type="button"
+                onClick={clearCoupon}
+                className="font-mono text-[10px] uppercase tracking-wider text-ink-3 hover:text-ink"
+              >
+                Remove
+              </button>
+            </div>
+          ) : (
+            <form
+              onSubmit={(event) => {
+                event.preventDefault();
+                handleApplyCoupon();
+              }}
+              className="mb-4 flex gap-2"
+            >
+              <input
+                type="text"
+                value={couponCode}
+                onChange={(event) => setCouponCode(event.target.value)}
+                placeholder="Coupon code"
+                disabled={isApplyingCoupon}
+                className="min-w-0 flex-1 rounded-ui-sm border border-line-strong bg-paper px-3 py-2 text-sm text-ink placeholder:text-ink-3 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-focus"
+              />
+              <Button
+                type="submit"
+                variant="secondary"
+                disabled={couponCode.trim().length === 0 || isApplyingCoupon}
+              >
+                {isApplyingCoupon ? "Checking…" : "Apply"}
+              </Button>
+            </form>
+          )}
+          {couponError && <p className="mb-4 -mt-2 text-sm text-open">{couponError}</p>}
 
-          <div className="mb-4 flex items-baseline justify-between">
+          <div className="mb-1 flex items-baseline justify-between">
             <span className="font-mono text-xs uppercase tracking-wider text-ink-2">Subtotal</span>
-            <span className="text-lg font-medium text-ink">{formatPrice(subtotal)}</span>
+            <span className="text-ink">{formatPrice(subtotal)}</span>
+          </div>
+          {coupon && (
+            <div className="mb-1 flex items-baseline justify-between">
+              <span className="font-mono text-xs uppercase tracking-wider text-ink-2">Discount</span>
+              <span className="text-ok">−{formatPrice(discountCents)}</span>
+            </div>
+          )}
+          <div className="mb-4 flex items-baseline justify-between">
+            <span className="font-mono text-xs uppercase tracking-wider text-ink-2">Total</span>
+            <span className="text-lg font-medium text-ink">{formatPrice(total)}</span>
           </div>
 
-          <Button type="button" disabled={items.length === 0} className="w-full">
-            Checkout
+          {checkoutError && <p className="mb-3 text-sm text-open">{checkoutError}</p>}
+
+          <Button
+            type="button"
+            onClick={handleCheckout}
+            disabled={items.length === 0 || isCheckingOut}
+            className="w-full"
+          >
+            {isCheckingOut ? "Redirecting…" : "Checkout"}
           </Button>
         </div>
       </div>

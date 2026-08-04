@@ -107,8 +107,46 @@ export type Database = {
         Update: Partial<Database["public"]["Tables"]["admins"]["Insert"]>;
         Relationships: [];
       };
+      coupons: {
+        Row: {
+          id: string;
+          code: string;
+          discount_type: "percent" | "fixed";
+          discount_value: number;
+          min_subtotal: number;
+          usage_limit: number | null;
+          times_used: number;
+          is_active: boolean;
+          expires_at: string | null;
+          created_at: string;
+          updated_at: string;
+        };
+        Insert: {
+          id?: string;
+          code: string;
+          discount_type: "percent" | "fixed";
+          discount_value: number;
+          min_subtotal?: number;
+          usage_limit?: number | null;
+          times_used?: number;
+          is_active?: boolean;
+          expires_at?: string | null;
+        };
+        Update: Partial<Database["public"]["Tables"]["coupons"]["Insert"]>;
+        Relationships: [];
+      };
     };
     Views: Record<string, never>;
-    Functions: Record<string, never>;
+    Functions: {
+      validate_coupon: {
+        Args: { p_code: string; p_subtotal: number };
+        Returns: {
+          valid: boolean;
+          reason: string | null;
+          discount_cents: number;
+          coupon_id: string | null;
+        }[];
+      };
+    };
   };
 };

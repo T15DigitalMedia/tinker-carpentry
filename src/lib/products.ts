@@ -140,6 +140,14 @@ async function getProductIdsForTagSlug(supabase: SupabaseClient<Database>, tagSl
   return data.map((row) => row.product_id);
 }
 
+export async function getProductsByIds(supabase: SupabaseClient<Database>, productIds: string[]) {
+  if (productIds.length === 0) return [];
+
+  const { data, error } = await supabase.from("products").select("*").in("id", productIds);
+  if (error) throw error;
+  return data;
+}
+
 export async function getProduct(supabase: SupabaseClient<Database>, id: string) {
   const { data, error } = await supabase
     .from("products")
