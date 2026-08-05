@@ -72,6 +72,10 @@ export async function createCheckoutSession(input: CheckoutInput): Promise<Creat
 
   const session = await stripe.checkout.sessions.create({
     mode: "payment",
+    // Card only: some other methods confirm asynchronously, which would mean
+    // "checkout.session.completed" doesn't always imply paid and the webhook
+    // (t3-7) would need a second event type to reconcile later payment.
+    payment_method_types: ["card"],
     line_items: lineItems,
     discounts: discounts.length > 0 ? discounts : undefined,
     automatic_tax: { enabled: true },
@@ -86,6 +90,10 @@ export async function createCheckoutSession(input: CheckoutInput): Promise<Creat
     custom_text: {
       submit: { message: "Orders are for local pickup only. We'll email you when yours is ready." },
     },
+    // Read back by the webhook (t3-7) to know which coupon to credit usage
+    // against — Stripe's own coupon object on the session has no link back
+    // to ours.
+    metadata: couponCode ? { coupon_code: couponCode } : undefined,
     success_url: `${SITE_URL}/checkout/success?session_id={CHECKOUT_SESSION_ID}`,
     cancel_url: `${SITE_URL}/checkout/cancel`,
   });
