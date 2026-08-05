@@ -107,8 +107,118 @@ export type Database = {
         Update: Partial<Database["public"]["Tables"]["admins"]["Insert"]>;
         Relationships: [];
       };
+      coupons: {
+        Row: {
+          id: string;
+          code: string;
+          discount_type: "percent" | "fixed";
+          discount_value: number;
+          min_subtotal: number;
+          usage_limit: number | null;
+          times_used: number;
+          is_active: boolean;
+          expires_at: string | null;
+          created_at: string;
+          updated_at: string;
+        };
+        Insert: {
+          id?: string;
+          code: string;
+          discount_type: "percent" | "fixed";
+          discount_value: number;
+          min_subtotal?: number;
+          usage_limit?: number | null;
+          times_used?: number;
+          is_active?: boolean;
+          expires_at?: string | null;
+        };
+        Update: Partial<Database["public"]["Tables"]["coupons"]["Insert"]>;
+        Relationships: [];
+      };
+      orders: {
+        Row: {
+          id: string;
+          stripe_checkout_session_id: string;
+          stripe_payment_intent_id: string | null;
+          customer_email: string;
+          customer_phone: string | null;
+          subtotal: number;
+          discount_cents: number;
+          tax_cents: number;
+          total: number;
+          coupon_code: string | null;
+          status: string;
+          created_at: string;
+          updated_at: string;
+        };
+        Insert: {
+          id?: string;
+          stripe_checkout_session_id: string;
+          stripe_payment_intent_id?: string | null;
+          customer_email: string;
+          customer_phone?: string | null;
+          subtotal: number;
+          discount_cents?: number;
+          tax_cents?: number;
+          total: number;
+          coupon_code?: string | null;
+          status?: string;
+        };
+        Update: Partial<Database["public"]["Tables"]["orders"]["Insert"]>;
+        Relationships: [];
+      };
+      order_items: {
+        Row: {
+          id: string;
+          order_id: string;
+          product_id: string | null;
+          product_name: string;
+          unit_price: number;
+          quantity: number;
+        };
+        Insert: {
+          id?: string;
+          order_id: string;
+          product_id?: string | null;
+          product_name: string;
+          unit_price: number;
+          quantity: number;
+        };
+        Update: Partial<Database["public"]["Tables"]["order_items"]["Insert"]>;
+        Relationships: [];
+      };
     };
     Views: Record<string, never>;
-    Functions: Record<string, never>;
+    Functions: {
+      validate_coupon: {
+        Args: { p_code: string; p_subtotal: number };
+        Returns: {
+          valid: boolean;
+          reason: string | null;
+          discount_cents: number;
+          coupon_id: string | null;
+        }[];
+      };
+      create_order_from_checkout_session: {
+        Args: {
+          p_stripe_checkout_session_id: string;
+          p_stripe_payment_intent_id: string | null;
+          p_customer_email: string;
+          p_customer_phone: string | null;
+          p_subtotal: number;
+          p_discount_cents: number;
+          p_tax_cents: number;
+          p_total: number;
+          p_coupon_code: string | null;
+          p_items: {
+            product_id: string | null;
+            product_name: string;
+            unit_price: number;
+            quantity: number;
+          }[];
+        };
+        Returns: string;
+      };
+    };
   };
 };
