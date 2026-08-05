@@ -1,3 +1,15 @@
+# [1.4.0](https://github.com/T15DigitalMedia/tinker-carpentry/compare/v1.3.0...v1.4.0) (2026-08-05)
+
+
+### Features
+
+* **cart:** add cart drawer ([0b46fb1](https://github.com/T15DigitalMedia/tinker-carpentry/commit/0b46fb156b74c178821361322a22b3d1be853088))
+* **cart:** add checkout webhook, and order creation ([035f82c](https://github.com/T15DigitalMedia/tinker-carpentry/commit/035f82c26c127829b594e24f2c718cc2c42620da))
+* **cart:** add coupons and initial stripe setup ([91c0d19](https://github.com/T15DigitalMedia/tinker-carpentry/commit/91c0d197293f85c89c5326a5938f9015a7cca3fe))
+* **cart:** add full checkout with success and cancel pages ([11d0a4b](https://github.com/T15DigitalMedia/tinker-carpentry/commit/11d0a4bfcdff9d3575fa905e805f3fa1955db281))
+* **cart:** add initial cart state ([df230da](https://github.com/T15DigitalMedia/tinker-carpentry/commit/df230daed56a414b12774b9752e47f40e566b7d4))
+* **cart:** phase 3 cart and checkout ([2121151](https://github.com/T15DigitalMedia/tinker-carpentry/commit/2121151d4b9c0444fe21b754e6c04630f4746324))
+
 # [1.3.0](https://github.com/T15DigitalMedia/tinker-carpentry/compare/v1.2.0...v1.3.0) (2026-08-04)
 
 
