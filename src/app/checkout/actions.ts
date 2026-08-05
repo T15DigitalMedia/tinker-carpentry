@@ -79,6 +79,13 @@ export async function createCheckoutSession(input: CheckoutInput): Promise<Creat
     // record) on by default, which requires a tax_code per product. We stay
     // merchant of record and use plain Stripe Tax instead (see t3-5).
     managed_payments: { enabled: false },
+    // Fulfillment is local pickup only (v1, no carrier rates) — no shipping
+    // address/options are collected. A phone number lets us reach the
+    // customer when their order is ready (see t4-3).
+    phone_number_collection: { enabled: true },
+    custom_text: {
+      submit: { message: "Orders are for local pickup only. We'll email you when yours is ready." },
+    },
     success_url: `${SITE_URL}/checkout/success?session_id={CHECKOUT_SESSION_ID}`,
     cancel_url: `${SITE_URL}/checkout/cancel`,
   });

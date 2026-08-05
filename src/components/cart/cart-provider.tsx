@@ -19,6 +19,7 @@ type CartContextValue = {
   addItem: (item: Omit<CartItem, "quantity">, quantity?: number) => void;
   updateQuantity: (productId: string, quantity: number) => void;
   removeItem: (productId: string) => void;
+  clearCart: () => void;
   isOpen: boolean;
   openCart: () => void;
   closeCart: () => void;
@@ -66,6 +67,10 @@ export function CartProvider({ children }: { children: ReactNode }) {
       },
       removeItem: (productId) => {
         setItems((prev) => removeCartItem(prev, productId));
+        setCouponState(null);
+      },
+      clearCart: () => {
+        setItems([]);
         setCouponState(null);
       },
       isOpen,
