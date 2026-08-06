@@ -1,0 +1,79 @@
+name: Test
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+
+jobs:
+  unit:
+    name: Lint & unit tests
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: lts/*
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Lint
+        run: npm run lint
+
+      - name: Unit tests
+        run: npm run test
+
+  e2e:
+    name: End-to-end tests
+    runs-on: ubuntu-latest
+    needs: unit
+    # Requires a Supabase project (test data seeded) and Stripe test-mode keys
+    # as repo secrets: NEXT_PUBLIC_SUPABASE_URL, NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY,
+    # SUPABASE_SERVICE_ROLE_KEY, NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY, STRIPE_SECRET_KEY.
+    # Each step below skips itself until those are configured (the `secrets`
+    # context isn't available in a job-level `if`, only in step/env context),
+    # so this won't block CI in the meantime.
+    env:
+      NEXT_PUBLIC_SITE_URL: http://localhost:3000
+      NEXT_PUBLIC_SUPABASE_URL: ${{ secrets.NEXT_PUBLIC_SUPABASE_URL }}
+      NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY: ${{ secrets.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY }}
+      SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
+      NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY: ${{ secrets.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY }}
+      STRIPE_SECRET_KEY: ${{ secrets.STRIPE_SECRET_KEY }}
+    steps:
+      - name: Checkout
+        if: ${{ env.NEXT_PUBLIC_SUPABASE_URL != '' }}
+        uses: actions/checkout@v4
+
+      - name: Set up Node
+        if: ${{ env.NEXT_PUBLIC_SUPABASE_URL != '' }}
+        uses: actions/setup-node@v4
+        with:
+          node-version: lts/*
+          cache: npm
+
+      - name: Install dependencies
+        if: ${{ env.NEXT_PUBLIC_SUPABASE_URL != '' }}
+        run: npm ci
+
+      - name: Install Playwright browsers
+        if: ${{ env.NEXT_PUBLIC_SUPABASE_URL != '' }}
+        run: npx playwright install --with-deps chromium
+
+      - name: Run Playwright tests
+        if: ${{ env.NEXT_PUBLIC_SUPABASE_URL != '' }}
+        run: npm run test:e2e
+
+      - name: Upload Playwright report
+        if: ${{ !cancelled() && env.NEXT_PUBLIC_SUPABASE_URL != '' }}
+        uses: actions/upload-artifact@v4
+        with:
+          name: playwright-report
+          path: playwright-report/
+          retention-days: 14
