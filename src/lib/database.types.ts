@@ -147,7 +147,7 @@ export type Database = {
           tax_cents: number;
           total: number;
           coupon_code: string | null;
-          status: string;
+          status: "paid" | "preparing" | "ready_for_pickup" | "collected" | "cancelled" | "refunded";
           created_at: string;
           updated_at: string;
         };
@@ -162,7 +162,7 @@ export type Database = {
           tax_cents?: number;
           total: number;
           coupon_code?: string | null;
-          status?: string;
+          status?: "paid" | "preparing" | "ready_for_pickup" | "collected" | "cancelled" | "refunded";
         };
         Update: Partial<Database["public"]["Tables"]["orders"]["Insert"]>;
         Relationships: [];
