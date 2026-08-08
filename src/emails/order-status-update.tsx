@@ -1,6 +1,7 @@
 import { SITE_NAME } from "@/lib/site";
 import type { OrderStatus } from "@/lib/orders";
 import { emailStyles as s } from "./styles";
+import { TrackOrderFooter } from "./track-order-footer";
 
 // "paid" gets the confirmation email instead, and "collected" happens with
 // the customer standing in front of us, so neither needs a status email.
@@ -48,7 +49,7 @@ export function OrderStatusUpdateEmail({ orderRef, status }: OrderStatusUpdateEm
           <h1 style={s.heading}>{copy.heading}</h1>
           <p style={s.orderRef}>Order {orderRef}</p>
           <p style={s.paragraph}>{copy.body}</p>
-          <p style={s.footer}>{SITE_NAME}</p>
+          <TrackOrderFooter />
         </div>
       </body>
     </html>

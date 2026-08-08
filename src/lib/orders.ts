@@ -21,6 +21,19 @@ export const ORDER_STATUS_LABELS: Record<OrderStatus, string> = {
   refunded: "Refunded",
 };
 
+// paid/preparing/ready_for_pickup still need admin action; collected is the
+// happy ending; cancelled/refunded are closed but not alarming, so they get
+// a neutral tone rather than the error red used for destructive actions.
+// Shared by the admin dashboard and the public order-tracking page.
+export const ORDER_STATUS_TONE: Record<OrderStatus, string> = {
+  paid: "border-open/40 bg-open/10 text-open",
+  preparing: "border-open/40 bg-open/10 text-open",
+  ready_for_pickup: "border-open/40 bg-open/10 text-open",
+  collected: "border-ok/40 bg-ok/10 text-ok",
+  cancelled: "border-line-strong bg-panel text-ink-3",
+  refunded: "border-line-strong bg-panel text-ink-3",
+};
+
 // Mirrors the orders_enforce_status_transition trigger (t4-1 migration) so
 // the admin UI only ever offers a move the DB will actually accept.
 const ORDER_STATUS_TRANSITIONS: Record<OrderStatus, OrderStatus[]> = {
@@ -124,4 +137,47 @@ export async function getOrderItems(supabase: SupabaseClient<Database>, orderId:
     .order("product_name", { ascending: true });
   if (error) throw error;
   return data;
+}
+
+export type TrackedOrder = {
+  orderRef: string;
+  status: OrderStatus;
+  createdAt: string;
+  subtotalCents: number;
+  discountCents: number;
+  taxCents: number;
+  totalCents: number;
+  couponCode: string | null;
+  items: { productName: string; quantity: number; unitPriceCents: number }[];
+};
+
+// Guest lookup (t4-4): proves ownership via ref + email instead of a
+// session, so this goes through the get_order_for_tracking RPC (public,
+// security definer) rather than a direct table select — see the t4-4
+// migration for why RLS alone can't express this check.
+export async function trackOrder(
+  supabase: SupabaseClient<Database>,
+  { orderRef, email }: { orderRef: string; email: string },
+): Promise<TrackedOrder | null> {
+  const { data, error } = await supabase
+    .rpc("get_order_for_tracking", { p_order_ref: orderRef, p_email: email })
+    .maybeSingle();
+  if (error) throw error;
+  if (!data) return null;
+
+  return {
+    orderRef: shortOrderRef(data.order_id),
+    status: data.status as OrderStatus,
+    createdAt: data.created_at,
+    subtotalCents: data.subtotal,
+    discountCents: data.discount_cents,
+    taxCents: data.tax_cents,
+    totalCents: data.total,
+    couponCode: data.coupon_code,
+    items: data.items.map((item) => ({
+      productName: item.product_name,
+      quantity: item.quantity,
+      unitPriceCents: item.unit_price,
+    })),
+  };
 }

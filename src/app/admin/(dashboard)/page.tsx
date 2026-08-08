@@ -9,21 +9,10 @@ import {
   ORDER_STAT_RANGES,
   ORDER_STAT_RANGE_LABELS,
   ORDER_STATUS_LABELS,
+  ORDER_STATUS_TONE,
   type OrderStatRange,
   type OrderStatus,
 } from "@/lib/orders";
-
-// paid/preparing/ready_for_pickup still need admin action; collected is the
-// happy ending; cancelled/refunded are closed but not alarming, so they get
-// a neutral tone rather than the error red used for destructive actions.
-const STATUS_TONE: Record<OrderStatus, string> = {
-  paid: "border-open/40 bg-open/10 text-open",
-  preparing: "border-open/40 bg-open/10 text-open",
-  ready_for_pickup: "border-open/40 bg-open/10 text-open",
-  collected: "border-ok/40 bg-ok/10 text-ok",
-  cancelled: "border-line-strong bg-panel text-ink-3",
-  refunded: "border-line-strong bg-panel text-ink-3",
-};
 
 const DEFAULT_RANGE: OrderStatRange = "today";
 
@@ -80,7 +69,7 @@ export default async function AdminDashboardPage({
           <p className="mt-2 font-serif text-3xl font-medium text-ink">{ordersForRange.length}</p>
         </div>
         {(Object.keys(statusCounts) as OrderStatus[]).map((status) => (
-          <div key={status} className={`rounded-ui border p-5 shadow-ui-sm ${STATUS_TONE[status]}`}>
+          <div key={status} className={`rounded-ui border p-5 shadow-ui-sm ${ORDER_STATUS_TONE[status]}`}>
             <p className="font-mono text-xs uppercase tracking-wider opacity-80">{ORDER_STATUS_LABELS[status]}</p>
             <p className="mt-2 font-serif text-3xl font-medium">{statusCounts[status]}</p>
           </div>

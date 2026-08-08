@@ -1,10 +1,12 @@
-import { describe, expect, it } from "vitest";
+import { describe, expect, it, vi } from "vitest";
+import type { SupabaseClient } from "@supabase/supabase-js";
 import {
   countOrdersByStatus,
   isValidOrderStatusTransition,
   nextOrderStatuses,
   orderStatRangeStart,
   ordersInRange,
+  trackOrder,
   ORDER_STATUSES,
 } from "@/lib/orders";
 
@@ -147,5 +149,64 @@ describe("ordersInRange", () => {
 
   it("returns an empty list for an empty input", () => {
     expect(ordersInRange([], "year", now)).toEqual([]);
+  });
+});
+
+function mockSupabase(result: { data: unknown; error: unknown }) {
+  const maybeSingle = vi.fn().mockResolvedValue(result);
+  const rpc = vi.fn().mockReturnValue({ maybeSingle });
+  return { client: { rpc } as unknown as SupabaseClient, rpc, maybeSingle };
+}
+
+describe("trackOrder", () => {
+  it("maps the RPC row to a TrackedOrder when ref and email match", async () => {
+    const { client, rpc } = mockSupabase({
+      data: {
+        order_id: "a1b2c3d4-0000-0000-0000-000000000000",
+        status: "ready_for_pickup",
+        created_at: "2026-08-08T12:00:00.000Z",
+        subtotal: 6500,
+        discount_cents: 0,
+        tax_cents: 325,
+        total: 6825,
+        coupon_code: null,
+        items: [{ product_name: "Walnut Cutting Board", quantity: 1, unit_price: 6500 }],
+      },
+      error: null,
+    });
+
+    const result = await trackOrder(client, { orderRef: "a1b2c3d4", email: "buyer@example.com" });
+
+    expect(rpc).toHaveBeenCalledWith("get_order_for_tracking", {
+      p_order_ref: "a1b2c3d4",
+      p_email: "buyer@example.com",
+    });
+    expect(result).toEqual({
+      orderRef: "A1B2C3D4",
+      status: "ready_for_pickup",
+      createdAt: "2026-08-08T12:00:00.000Z",
+      subtotalCents: 6500,
+      discountCents: 0,
+      taxCents: 325,
+      totalCents: 6825,
+      couponCode: null,
+      items: [{ productName: "Walnut Cutting Board", quantity: 1, unitPriceCents: 6500 }],
+    });
+  });
+
+  it("returns null when no order matches the ref/email pair", async () => {
+    const { client } = mockSupabase({ data: null, error: null });
+
+    const result = await trackOrder(client, { orderRef: "deadbeef", email: "nobody@example.com" });
+
+    expect(result).toBeNull();
+  });
+
+  it("throws when the RPC call itself errors", async () => {
+    const { client } = mockSupabase({ data: null, error: new Error("connection failed") });
+
+    await expect(trackOrder(client, { orderRef: "a1b2c3d4", email: "buyer@example.com" })).rejects.toThrow(
+      "connection failed",
+    );
   });
 });

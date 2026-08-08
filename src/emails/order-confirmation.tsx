@@ -1,6 +1,6 @@
 import { formatPrice } from "@/lib/currency";
-import { SITE_NAME } from "@/lib/site";
 import { emailStyles as s } from "./styles";
+import { TrackOrderFooter } from "./track-order-footer";
 
 export type OrderConfirmationEmailItem = {
   name: string;
@@ -84,7 +84,7 @@ export function OrderConfirmationEmail({
             </tbody>
           </table>
 
-          <p style={s.footer}>{SITE_NAME}</p>
+          <TrackOrderFooter />
         </div>
       </body>
     </html>

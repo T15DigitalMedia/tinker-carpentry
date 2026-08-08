@@ -95,4 +95,7 @@ export const emailStyles = {
     fontSize: 12,
     color: "#6c7a88",
   } satisfies CSSProperties,
+  link: {
+    color: "#7c4a22",
+  } satisfies CSSProperties,
 } as const;

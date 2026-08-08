@@ -221,6 +221,20 @@ export type Database = {
         };
         Returns: { order_id: string; is_new: boolean }[];
       };
+      get_order_for_tracking: {
+        Args: { p_order_ref: string; p_email: string };
+        Returns: {
+          order_id: string;
+          status: string;
+          created_at: string;
+          subtotal: number;
+          discount_cents: number;
+          tax_cents: number;
+          total: number;
+          coupon_code: string | null;
+          items: { product_name: string; quantity: number; unit_price: number }[];
+        }[];
+      };
     };
   };
 };
