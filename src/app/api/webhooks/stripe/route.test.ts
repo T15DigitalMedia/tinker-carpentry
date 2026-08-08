@@ -1,10 +1,15 @@
 import { describe, expect, it, vi, beforeEach } from "vitest";
 
-const { constructEvent, listLineItems, rpc } = vi.hoisted(() => ({
-  constructEvent: vi.fn(),
-  listLineItems: vi.fn(),
-  rpc: vi.fn(),
-}));
+const { constructEvent, listLineItems, rpc, single, getProductsByIds, sendOrderConfirmationEmail } = vi.hoisted(
+  () => ({
+    constructEvent: vi.fn(),
+    listLineItems: vi.fn(),
+    rpc: vi.fn(),
+    single: vi.fn(),
+    getProductsByIds: vi.fn(),
+    sendOrderConfirmationEmail: vi.fn(),
+  }),
+);
 
 vi.mock("@/lib/stripe", () => ({
   stripe: {
@@ -16,6 +21,10 @@ vi.mock("@/lib/stripe", () => ({
 vi.mock("@/lib/supabase/service", () => ({
   createServiceClient: () => ({ rpc }),
 }));
+
+vi.mock("@/lib/products", () => ({ getProductsByIds }));
+
+vi.mock("@/lib/order-emails", () => ({ sendOrderConfirmationEmail }));
 
 import { POST } from "@/app/api/webhooks/stripe/route";
 
@@ -51,6 +60,8 @@ function checkoutSessionCompletedEvent(overrides: Record<string, unknown> = {}) 
 beforeEach(() => {
   vi.clearAllMocks();
   process.env.STRIPE_WEBHOOK_SECRET = "whsec_test";
+  rpc.mockReturnValue({ single });
+  getProductsByIds.mockResolvedValue([]);
 });
 
 describe("POST /api/webhooks/stripe", () => {
@@ -102,7 +113,7 @@ describe("POST /api/webhooks/stripe", () => {
     expect(rpc).not.toHaveBeenCalled();
   });
 
-  it("creates an order from the checkout session on success", async () => {
+  it("creates an order from the checkout session on success and emails the confirmation", async () => {
     constructEvent.mockReturnValue(checkoutSessionCompletedEvent());
     listLineItems.mockResolvedValue({
       data: [
@@ -114,7 +125,8 @@ describe("POST /api/webhooks/stripe", () => {
         },
       ],
     });
-    rpc.mockResolvedValue({ error: null });
+    single.mockResolvedValue({ data: { order_id: "order-1", is_new: true }, error: null });
+    getProductsByIds.mockResolvedValue([{ id: "prod_1", made_to_order: true, lead_time_days: 5 }]);
 
     const response = await POST(makeRequest("{}"));
 
@@ -141,17 +153,49 @@ describe("POST /api/webhooks/stripe", () => {
         ],
       }),
     );
+    expect(sendOrderConfirmationEmail).toHaveBeenCalledWith(
+      expect.objectContaining({
+        to: "buyer@example.com",
+        orderRef: "ORDER-1",
+        items: [
+          expect.objectContaining({
+            name: "Walnut Cutting Board",
+            quantity: 2,
+            unitPriceCents: 1000,
+            madeToOrder: true,
+            leadTimeDays: 5,
+          }),
+        ],
+        subtotalCents: 2000,
+        discountCents: 200,
+        taxCents: 0,
+        totalCents: 1800,
+        couponCode: "SAVE10",
+      }),
+    );
+  });
+
+  it("does not re-send the confirmation email on a Stripe retry of an already-fulfilled session", async () => {
+    constructEvent.mockReturnValue(checkoutSessionCompletedEvent());
+    listLineItems.mockResolvedValue({ data: [] });
+    single.mockResolvedValue({ data: { order_id: "order-1", is_new: false }, error: null });
+
+    const response = await POST(makeRequest("{}"));
+
+    expect(response.status).toBe(200);
+    expect(sendOrderConfirmationEmail).not.toHaveBeenCalled();
   });
 
   it("returns 500 so Stripe retries when order creation fails", async () => {
     constructEvent.mockReturnValue(checkoutSessionCompletedEvent());
     listLineItems.mockResolvedValue({ data: [] });
-    rpc.mockResolvedValue({ error: { message: "duplicate key" } });
+    single.mockResolvedValue({ data: null, error: { message: "duplicate key" } });
 
     const response = await POST(makeRequest("{}"));
 
     expect(response.status).toBe(500);
     const body = await response.json();
     expect(body.error).toBe("duplicate key");
+    expect(sendOrderConfirmationEmail).not.toHaveBeenCalled();
   });
 });

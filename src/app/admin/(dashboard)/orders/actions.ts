@@ -2,8 +2,9 @@
 
 import { revalidatePath } from "next/cache";
 import { createClient } from "@/lib/supabase/server";
-import { getOrder, isValidOrderStatusTransition } from "@/lib/orders";
+import { getOrder, isValidOrderStatusTransition, shortOrderRef } from "@/lib/orders";
 import { orderUpdateSchema } from "@/lib/validation/order";
+import { sendOrderStatusUpdateEmail } from "@/lib/order-emails";
 
 export type OrderUpdateState = {
   error?: string;
@@ -36,6 +37,14 @@ export async function updateOrderAction(
     .eq("id", orderId);
 
   if (error) return { error: error.message };
+
+  if (parsed.data.status !== order.status) {
+    await sendOrderStatusUpdateEmail({
+      to: order.customer_email,
+      orderRef: shortOrderRef(order.id),
+      status: parsed.data.status,
+    });
+  }
 
   revalidatePath("/admin/orders");
   revalidatePath(`/admin/orders/${orderId}`);

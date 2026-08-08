@@ -219,7 +219,7 @@ export type Database = {
             quantity: number;
           }[];
         };
-        Returns: string;
+        Returns: { order_id: string; is_new: boolean }[];
       };
     };
   };
