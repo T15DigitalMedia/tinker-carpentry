@@ -8,6 +8,7 @@ import {
   orderStatRangeStart,
   ordersInRange,
   refundOrderAndRestock,
+  summarizeSales,
   trackOrder,
   ORDER_STATUSES,
 } from "@/lib/orders";
@@ -97,6 +98,65 @@ describe("countOrdersByStatus", () => {
       collected: 0,
       cancelled: 0,
       refunded: 0,
+    });
+  });
+});
+
+describe("summarizeSales", () => {
+  it("counts every non-cancelled, non-refunded order as revenue", () => {
+    const summary = summarizeSales([
+      { status: "paid", total: 1000 },
+      { status: "preparing", total: 2000 },
+      { status: "ready_for_pickup", total: 3000 },
+      { status: "collected", total: 4000 },
+    ]);
+
+    expect(summary).toEqual({
+      orderCount: 4,
+      grossRevenueCents: 10000,
+      averageOrderValueCents: 2500,
+      refundedCents: 0,
+    });
+  });
+
+  it("excludes cancelled orders from revenue entirely", () => {
+    const summary = summarizeSales([
+      { status: "paid", total: 1000 },
+      { status: "cancelled", total: 5000 },
+    ]);
+
+    expect(summary.orderCount).toBe(1);
+    expect(summary.grossRevenueCents).toBe(1000);
+  });
+
+  it("excludes refunded orders from revenue but reports the refunded total separately", () => {
+    const summary = summarizeSales([
+      { status: "paid", total: 1000 },
+      { status: "refunded", total: 5000 },
+      { status: "refunded", total: 2000 },
+    ]);
+
+    expect(summary.orderCount).toBe(1);
+    expect(summary.grossRevenueCents).toBe(1000);
+    expect(summary.refundedCents).toBe(7000);
+  });
+
+  it("rounds the average order value to the nearest cent", () => {
+    const summary = summarizeSales([
+      { status: "paid", total: 1000 },
+      { status: "paid", total: 999 },
+      { status: "paid", total: 999 },
+    ]);
+
+    expect(summary.averageOrderValueCents).toBe(999); // 2998 / 3 = 999.33...
+  });
+
+  it("returns zeros for an empty list without dividing by zero", () => {
+    expect(summarizeSales([])).toEqual({
+      orderCount: 0,
+      grossRevenueCents: 0,
+      averageOrderValueCents: 0,
+      refundedCents: 0,
     });
   });
 });

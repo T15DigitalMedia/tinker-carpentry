@@ -61,6 +61,34 @@ export function countOrdersByStatus(orders: { status: OrderStatus }[]): Record<O
   return counts;
 }
 
+export type SalesSummary = {
+  orderCount: number;
+  grossRevenueCents: number;
+  averageOrderValueCents: number;
+  refundedCents: number;
+};
+
+// Every non-terminal-or-collected status still holds the customer's
+// payment, so it counts as revenue; cancelled/refunded orders don't (the
+// money was never captured or was returned) — refunded is broken out
+// separately so the owner can see what came back out.
+const REVENUE_STATUSES: readonly OrderStatus[] = ["paid", "preparing", "ready_for_pickup", "collected"];
+
+export function summarizeSales(orders: { status: OrderStatus; total: number }[]): SalesSummary {
+  const revenueOrders = orders.filter((order) => REVENUE_STATUSES.includes(order.status));
+  const grossRevenueCents = revenueOrders.reduce((sum, order) => sum + order.total, 0);
+  const refundedCents = orders
+    .filter((order) => order.status === "refunded")
+    .reduce((sum, order) => sum + order.total, 0);
+
+  return {
+    orderCount: revenueOrders.length,
+    grossRevenueCents,
+    averageOrderValueCents: revenueOrders.length > 0 ? Math.round(grossRevenueCents / revenueOrders.length) : 0,
+    refundedCents,
+  };
+}
+
 export const ORDER_STAT_RANGES = ["today", "week", "month", "year"] as const;
 
 export type OrderStatRange = (typeof ORDER_STAT_RANGES)[number];

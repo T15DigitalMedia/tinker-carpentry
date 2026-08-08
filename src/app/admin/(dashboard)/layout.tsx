@@ -9,6 +9,7 @@ const adminNavLinks = [
   { href: "/admin/orders", label: "Orders" },
   { href: "/admin/products", label: "Products" },
   { href: "/admin/tags", label: "Tags" },
+  { href: "/admin/reports", label: "Reports" },
 ];
 
 export default async function AdminLayout({
