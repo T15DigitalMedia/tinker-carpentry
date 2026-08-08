@@ -3,8 +3,8 @@ import type Stripe from "stripe";
 import { stripe } from "@/lib/stripe";
 import { createServiceClient } from "@/lib/supabase/service";
 import { getProductsByIds } from "@/lib/products";
-import { shortOrderRef } from "@/lib/orders";
-import { sendOrderConfirmationEmail } from "@/lib/order-emails";
+import { getOrder, refundOrderAndRestock, shortOrderRef } from "@/lib/orders";
+import { sendOrderConfirmationEmail, sendOrderStatusUpdateEmail } from "@/lib/order-emails";
 
 export async function POST(request: Request) {
   const signature = request.headers.get("stripe-signature");
@@ -22,11 +22,19 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: `Signature verification failed: ${message}` }, { status: 400 });
   }
 
-  if (event.type !== "checkout.session.completed") {
-    return NextResponse.json({ received: true });
+  if (event.type === "checkout.session.completed") {
+    return handleCheckoutSessionCompleted(event);
   }
 
-  const session = event.data.object as Stripe.Checkout.Session;
+  if (event.type === "charge.refunded") {
+    return handleChargeRefunded(event);
+  }
+
+  return NextResponse.json({ received: true });
+}
+
+async function handleCheckoutSessionCompleted(event: Stripe.CheckoutSessionCompletedEvent) {
+  const session = event.data.object;
 
   // Restricted to card payments at session creation (see t3-4), so
   // "completed" always means synchronously paid — no async payment methods
@@ -108,6 +116,49 @@ export async function POST(request: Request) {
       taxCents,
       totalCents: total,
       couponCode,
+    });
+  }
+
+  return NextResponse.json({ received: true });
+}
+
+async function handleChargeRefunded(event: Stripe.ChargeRefundedEvent) {
+  const charge = event.data.object;
+
+  // A charge can be partially refunded more than once before it's fully
+  // refunded; this app only models a whole-order "refunded" status, so it
+  // waits for Stripe's own signal that the full amount has come back.
+  if (!charge.refunded) {
+    return NextResponse.json({ received: true });
+  }
+
+  const paymentIntentId =
+    typeof charge.payment_intent === "string" ? charge.payment_intent : (charge.payment_intent?.id ?? null);
+  if (!paymentIntentId) {
+    return NextResponse.json({ received: true });
+  }
+
+  const supabase = createServiceClient();
+
+  let result;
+  try {
+    result = await refundOrderAndRestock(supabase, paymentIntentId);
+  } catch (err) {
+    // 500 so Stripe retries — refund_order_and_restock is idempotent on
+    // order status, so a retry is safe.
+    const message = err instanceof Error ? err.message : "Unknown error";
+    return NextResponse.json({ error: message }, { status: 500 });
+  }
+
+  // No matching order (e.g. a charge from outside this app) or the order
+  // was already refunded/has no legal path to "refunded" (e.g. cancelled) —
+  // either way there's nothing further to do.
+  if (result?.transitioned) {
+    const order = await getOrder(supabase, result.orderId);
+    await sendOrderStatusUpdateEmail({
+      to: order.customer_email,
+      orderRef: shortOrderRef(order.id),
+      status: "refunded",
     });
   }
 

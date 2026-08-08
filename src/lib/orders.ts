@@ -181,3 +181,31 @@ export async function trackOrder(
     })),
   };
 }
+
+export type CloseOrderResult = { orderId: string; transitioned: boolean };
+
+// Admin-initiated cancel: no money moves, so this runs synchronously off
+// the admin's click. See the t4-5 migration for why this and the refund
+// below are RPCs rather than a plain status update.
+export async function cancelOrder(supabase: SupabaseClient<Database>, orderId: string): Promise<CloseOrderResult> {
+  const { data, error } = await supabase.rpc("cancel_order_and_restock", { p_order_id: orderId }).single();
+  if (error) throw error;
+  return { orderId: data.order_id, transitioned: data.transitioned };
+}
+
+// Webhook-initiated only: the actual status flip happens when Stripe
+// confirms the refund (see the stripe webhook route), not when the admin
+// clicks "Refund" — that only calls the Stripe API. `transitioned` is false
+// both on a redelivered webhook event and on an order whose current status
+// has no legal path to "refunded" (e.g. already cancelled).
+export async function refundOrderAndRestock(
+  supabase: SupabaseClient<Database>,
+  stripePaymentIntentId: string,
+): Promise<CloseOrderResult | null> {
+  const { data, error } = await supabase
+    .rpc("refund_order_and_restock", { p_stripe_payment_intent_id: stripePaymentIntentId })
+    .maybeSingle();
+  if (error) throw error;
+  if (!data) return null;
+  return { orderId: data.order_id, transitioned: data.transitioned };
+}

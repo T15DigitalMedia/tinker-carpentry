@@ -3,7 +3,8 @@ import { createClient } from "@/lib/supabase/server";
 import { getOrder, getOrderItems, ORDER_STATUS_LABELS, shortOrderRef } from "@/lib/orders";
 import { formatPrice } from "@/lib/currency";
 import { OrderStatusForm } from "@/components/admin/order-status-form";
-import { updateOrderAction } from "../actions";
+import { OrderTerminalActions } from "@/components/admin/order-terminal-actions";
+import { cancelOrderAction, refundOrderAction, updateOrderAction } from "../actions";
 
 export default async function OrderDetailPage({
   params,
@@ -22,6 +23,8 @@ export default async function OrderDetailPage({
 
   const items = await getOrderItems(supabase, id);
   const boundUpdate = updateOrderAction.bind(null, id);
+  const boundCancel = cancelOrderAction.bind(null, id);
+  const boundRefund = refundOrderAction.bind(null, id);
 
   return (
     <div>
@@ -93,6 +96,7 @@ export default async function OrderDetailPage({
             Status: <span className="text-walnut">{ORDER_STATUS_LABELS[order.status]}</span>
           </h2>
           <OrderStatusForm action={boundUpdate} status={order.status} notes={order.notes} />
+          <OrderTerminalActions status={order.status} cancelAction={boundCancel} refundAction={boundRefund} />
         </div>
       </div>
     </div>

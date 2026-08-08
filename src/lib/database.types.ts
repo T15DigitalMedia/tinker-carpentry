@@ -235,6 +235,14 @@ export type Database = {
           items: { product_name: string; quantity: number; unit_price: number }[];
         }[];
       };
+      cancel_order_and_restock: {
+        Args: { p_order_id: string };
+        Returns: { order_id: string; transitioned: boolean }[];
+      };
+      refund_order_and_restock: {
+        Args: { p_stripe_payment_intent_id: string };
+        Returns: { order_id: string; transitioned: boolean }[];
+      };
     };
   };
 };

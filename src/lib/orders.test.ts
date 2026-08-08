@@ -1,11 +1,13 @@
 import { describe, expect, it, vi } from "vitest";
 import type { SupabaseClient } from "@supabase/supabase-js";
 import {
+  cancelOrder,
   countOrdersByStatus,
   isValidOrderStatusTransition,
   nextOrderStatuses,
   orderStatRangeStart,
   ordersInRange,
+  refundOrderAndRestock,
   trackOrder,
   ORDER_STATUSES,
 } from "@/lib/orders";
@@ -208,5 +210,70 @@ describe("trackOrder", () => {
     await expect(trackOrder(client, { orderRef: "a1b2c3d4", email: "buyer@example.com" })).rejects.toThrow(
       "connection failed",
     );
+  });
+});
+
+function mockSupabaseSingle(result: { data: unknown; error: unknown }) {
+  const single = vi.fn().mockResolvedValue(result);
+  const rpc = vi.fn().mockReturnValue({ single });
+  return { client: { rpc } as unknown as SupabaseClient, rpc, single };
+}
+
+describe("cancelOrder", () => {
+  it("returns transitioned: true when the RPC cancels a fresh order", async () => {
+    const { client, rpc } = mockSupabaseSingle({
+      data: { order_id: "order-1", transitioned: true },
+      error: null,
+    });
+
+    const result = await cancelOrder(client, "order-1");
+
+    expect(rpc).toHaveBeenCalledWith("cancel_order_and_restock", { p_order_id: "order-1" });
+    expect(result).toEqual({ orderId: "order-1", transitioned: true });
+  });
+
+  it("returns transitioned: false when the order was already cancelled", async () => {
+    const { client } = mockSupabaseSingle({
+      data: { order_id: "order-1", transitioned: false },
+      error: null,
+    });
+
+    const result = await cancelOrder(client, "order-1");
+
+    expect(result).toEqual({ orderId: "order-1", transitioned: false });
+  });
+
+  it("throws when the RPC call itself errors", async () => {
+    const { client } = mockSupabaseSingle({ data: null, error: new Error("not authorized") });
+
+    await expect(cancelOrder(client, "order-1")).rejects.toThrow("not authorized");
+  });
+});
+
+describe("refundOrderAndRestock", () => {
+  it("returns transitioned: true when the RPC refunds a matching order", async () => {
+    const { client, rpc } = mockSupabase({
+      data: { order_id: "order-1", transitioned: true },
+      error: null,
+    });
+
+    const result = await refundOrderAndRestock(client, "pi_123");
+
+    expect(rpc).toHaveBeenCalledWith("refund_order_and_restock", { p_stripe_payment_intent_id: "pi_123" });
+    expect(result).toEqual({ orderId: "order-1", transitioned: true });
+  });
+
+  it("returns null when no order matches the payment intent", async () => {
+    const { client } = mockSupabase({ data: null, error: null });
+
+    const result = await refundOrderAndRestock(client, "pi_unknown");
+
+    expect(result).toBeNull();
+  });
+
+  it("throws when the RPC call itself errors", async () => {
+    const { client } = mockSupabase({ data: null, error: new Error("connection failed") });
+
+    await expect(refundOrderAndRestock(client, "pi_123")).rejects.toThrow("connection failed");
   });
 });

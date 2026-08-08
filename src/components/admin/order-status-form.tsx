@@ -21,7 +21,10 @@ export function OrderStatusForm({
 }) {
   const [state, formAction, isPending] = useActionState(action, undefined);
   const fieldErrors = state?.fieldErrors ?? {};
-  const options = [status, ...nextOrderStatuses(status)];
+  // Cancel/refund restock (and refund also moves money via Stripe), so both
+  // go through the dedicated buttons in OrderTerminalActions instead of
+  // this generic status dropdown.
+  const options = [status, ...nextOrderStatuses(status).filter((s) => s !== "cancelled" && s !== "refunded")];
 
   return (
     <form action={formAction} className="flex max-w-md flex-col gap-5 rounded-ui border border-line bg-paper p-6 shadow-ui-sm">
