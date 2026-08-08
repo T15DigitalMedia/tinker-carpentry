@@ -148,6 +148,7 @@ export type Database = {
           total: number;
           coupon_code: string | null;
           status: "paid" | "preparing" | "ready_for_pickup" | "collected" | "cancelled" | "refunded";
+          notes: string | null;
           created_at: string;
           updated_at: string;
         };
@@ -163,6 +164,7 @@ export type Database = {
           total: number;
           coupon_code?: string | null;
           status?: "paid" | "preparing" | "ready_for_pickup" | "collected" | "cancelled" | "refunded";
+          notes?: string | null;
         };
         Update: Partial<Database["public"]["Tables"]["orders"]["Insert"]>;
         Relationships: [];

@@ -6,6 +6,7 @@ import { AdminNavLink } from "@/components/admin/admin-nav-link";
 
 const adminNavLinks = [
   { href: "/admin", label: "Dashboard" },
+  { href: "/admin/orders", label: "Orders" },
   { href: "/admin/products", label: "Products" },
   { href: "/admin/tags", label: "Tags" },
 ];

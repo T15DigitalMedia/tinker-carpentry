@@ -1,5 +1,12 @@
 import { describe, expect, it } from "vitest";
-import { isValidOrderStatusTransition, nextOrderStatuses, ORDER_STATUSES } from "@/lib/orders";
+import {
+  countOrdersByStatus,
+  isValidOrderStatusTransition,
+  nextOrderStatuses,
+  orderStatRangeStart,
+  ordersInRange,
+  ORDER_STATUSES,
+} from "@/lib/orders";
 
 describe("nextOrderStatuses", () => {
   it("offers the forward step plus cancel/refund from paid", () => {
@@ -61,5 +68,84 @@ describe("isValidOrderStatusTransition", () => {
     expect(isValidOrderStatusTransition("cancelled", "preparing")).toBe(false);
     expect(isValidOrderStatusTransition("refunded", "paid")).toBe(false);
     expect(isValidOrderStatusTransition("collected", "cancelled")).toBe(false);
+  });
+});
+
+describe("countOrdersByStatus", () => {
+  it("zero-fills every status, including ones with no orders", () => {
+    const counts = countOrdersByStatus([{ status: "paid" }, { status: "paid" }, { status: "collected" }]);
+
+    expect(counts).toEqual({
+      paid: 2,
+      preparing: 0,
+      ready_for_pickup: 0,
+      collected: 1,
+      cancelled: 0,
+      refunded: 0,
+    });
+  });
+
+  it("returns all zeros for an empty list", () => {
+    expect(countOrdersByStatus([])).toEqual({
+      paid: 0,
+      preparing: 0,
+      ready_for_pickup: 0,
+      collected: 0,
+      cancelled: 0,
+      refunded: 0,
+    });
+  });
+});
+
+describe("orderStatRangeStart", () => {
+  // 2026-08-08 is a Saturday.
+  const now = new Date("2026-08-08T18:00:00.000Z");
+
+  it("starts today's range at midnight UTC the same day", () => {
+    expect(orderStatRangeStart("today", now)).toEqual(new Date("2026-08-08T00:00:00.000Z"));
+  });
+
+  it("starts this week's range on the preceding Monday", () => {
+    expect(orderStatRangeStart("week", now)).toEqual(new Date("2026-08-03T00:00:00.000Z"));
+  });
+
+  it("treats a Monday as the start of its own week", () => {
+    const monday = new Date("2026-08-03T12:00:00.000Z");
+    expect(orderStatRangeStart("week", monday)).toEqual(new Date("2026-08-03T00:00:00.000Z"));
+  });
+
+  it("starts this month's range on the 1st", () => {
+    expect(orderStatRangeStart("month", now)).toEqual(new Date("2026-08-01T00:00:00.000Z"));
+  });
+
+  it("starts this year's range on January 1st", () => {
+    expect(orderStatRangeStart("year", now)).toEqual(new Date("2026-01-01T00:00:00.000Z"));
+  });
+});
+
+describe("ordersInRange", () => {
+  const now = new Date("2026-08-08T18:00:00.000Z");
+
+  it("keeps orders on or after the range start and drops earlier ones", () => {
+    const orders = [
+      { created_at: "2026-08-07T23:59:59.999Z" },
+      { created_at: "2026-08-08T00:00:00.000Z" },
+      { created_at: "2026-08-08T23:59:59.999Z" },
+    ];
+    expect(ordersInRange(orders, "today", now)).toEqual([
+      { created_at: "2026-08-08T00:00:00.000Z" },
+      { created_at: "2026-08-08T23:59:59.999Z" },
+    ]);
+  });
+
+  it("widens as the range widens", () => {
+    const orders = [{ created_at: "2026-08-01T00:00:00.000Z" }, { created_at: "2026-02-01T00:00:00.000Z" }];
+    expect(ordersInRange(orders, "today", now)).toEqual([]);
+    expect(ordersInRange(orders, "month", now)).toEqual([{ created_at: "2026-08-01T00:00:00.000Z" }]);
+    expect(ordersInRange(orders, "year", now)).toEqual(orders);
+  });
+
+  it("returns an empty list for an empty input", () => {
+    expect(ordersInRange([], "year", now)).toEqual([]);
   });
 });
