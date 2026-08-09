@@ -27,3 +27,17 @@ export async function validateCoupon(
   }
   return { valid: false, reason: (data.reason ?? "not_found") as CouponRejectionReason };
 }
+
+// Admin CRUD reads (t5-4) — writes go straight through actions.ts, same as
+// products, since there's no shared logic beyond a plain insert/update.
+export async function listCoupons(supabase: SupabaseClient<Database>) {
+  const { data, error } = await supabase.from("coupons").select("*").order("created_at", { ascending: false });
+  if (error) throw error;
+  return data;
+}
+
+export async function getCoupon(supabase: SupabaseClient<Database>, id: string) {
+  const { data, error } = await supabase.from("coupons").select("*").eq("id", id).single();
+  if (error) throw error;
+  return data;
+}
