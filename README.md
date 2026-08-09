@@ -29,6 +29,8 @@ Requires a `.env.local` with:
 ```
 NEXT_PUBLIC_SUPABASE_URL=
 NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY=
+RESEND_API_KEY=
+RESEND_FROM_EMAIL=
 ```
 
 Open [http://localhost:3000](http://localhost:3000).

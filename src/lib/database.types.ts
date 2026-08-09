@@ -147,7 +147,8 @@ export type Database = {
           tax_cents: number;
           total: number;
           coupon_code: string | null;
-          status: string;
+          status: "paid" | "preparing" | "ready_for_pickup" | "collected" | "cancelled" | "refunded";
+          notes: string | null;
           created_at: string;
           updated_at: string;
         };
@@ -162,7 +163,8 @@ export type Database = {
           tax_cents?: number;
           total: number;
           coupon_code?: string | null;
-          status?: string;
+          status?: "paid" | "preparing" | "ready_for_pickup" | "collected" | "cancelled" | "refunded";
+          notes?: string | null;
         };
         Update: Partial<Database["public"]["Tables"]["orders"]["Insert"]>;
         Relationships: [];
@@ -217,7 +219,29 @@ export type Database = {
             quantity: number;
           }[];
         };
-        Returns: string;
+        Returns: { order_id: string; is_new: boolean }[];
+      };
+      get_order_for_tracking: {
+        Args: { p_order_ref: string; p_email: string };
+        Returns: {
+          order_id: string;
+          status: string;
+          created_at: string;
+          subtotal: number;
+          discount_cents: number;
+          tax_cents: number;
+          total: number;
+          coupon_code: string | null;
+          items: { product_name: string; quantity: number; unit_price: number }[];
+        }[];
+      };
+      cancel_order_and_restock: {
+        Args: { p_order_id: string };
+        Returns: { order_id: string; transitioned: boolean }[];
+      };
+      refund_order_and_restock: {
+        Args: { p_stripe_payment_intent_id: string };
+        Returns: { order_id: string; transitioned: boolean }[];
       };
     };
   };

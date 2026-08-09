@@ -61,12 +61,20 @@ export default async function CheckoutSuccessPage({
           Your order is for local pickup — we&apos;ll email you when it&apos;s ready.
         </p>
 
-        <Link
-          href="/shop"
-          className="mt-8 inline-flex items-center gap-1.5 font-mono text-xs uppercase tracking-wider text-ink-3 transition-colors hover:text-ink"
-        >
-          Continue shopping
-        </Link>
+        <div className="mt-8 flex items-center justify-center gap-6">
+          <Link
+            href="/track"
+            className="inline-flex items-center gap-1.5 font-mono text-xs uppercase tracking-wider text-ink-3 transition-colors hover:text-ink"
+          >
+            Track your order
+          </Link>
+          <Link
+            href="/shop"
+            className="inline-flex items-center gap-1.5 font-mono text-xs uppercase tracking-wider text-ink-3 transition-colors hover:text-ink"
+          >
+            Continue shopping
+          </Link>
+        </div>
       </div>
     </Container>
   );
