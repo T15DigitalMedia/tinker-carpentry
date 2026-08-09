@@ -189,6 +189,32 @@ export type Database = {
         Update: Partial<Database["public"]["Tables"]["order_items"]["Insert"]>;
         Relationships: [];
       };
+      reviews: {
+        Row: {
+          id: string;
+          product_id: string;
+          order_id: string;
+          reviewer_email: string;
+          rating: number;
+          body: string;
+          status: "pending" | "approved" | "hidden";
+          admin_response: string | null;
+          created_at: string;
+          updated_at: string;
+        };
+        Insert: {
+          id?: string;
+          product_id: string;
+          order_id: string;
+          reviewer_email: string;
+          rating: number;
+          body: string;
+          status?: "pending" | "approved" | "hidden";
+          admin_response?: string | null;
+        };
+        Update: Partial<Database["public"]["Tables"]["reviews"]["Insert"]>;
+        Relationships: [];
+      };
     };
     Views: Record<string, never>;
     Functions: {
@@ -242,6 +268,16 @@ export type Database = {
       refund_order_and_restock: {
         Args: { p_stripe_payment_intent_id: string };
         Returns: { order_id: string; transitioned: boolean }[];
+      };
+      submit_review: {
+        Args: {
+          p_order_ref: string;
+          p_email: string;
+          p_product_id: string;
+          p_rating: number;
+          p_body: string;
+        };
+        Returns: { id: string }[];
       };
     };
   };
