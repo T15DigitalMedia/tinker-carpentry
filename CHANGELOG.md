@@ -1,3 +1,16 @@
+# [1.5.0](https://github.com/T15DigitalMedia/tinker-carpentry/compare/v1.4.0...v1.5.0) (2026-08-09)
+
+
+### Features
+
+* **order:** add admin order list and basic metrics ([5693214](https://github.com/T15DigitalMedia/tinker-carpentry/commit/569321434936297e9993c340b6fb8f6b8a4acd23))
+* **order:** add initial model ([693f67e](https://github.com/T15DigitalMedia/tinker-carpentry/commit/693f67eb2554467d613678d31268502711380a87))
+* **order:** add transaction emails ([2357c5e](https://github.com/T15DigitalMedia/tinker-carpentry/commit/2357c5ef3e42d263a980480fd0fe91a532812954))
+* **order:** guest order lookup ([00104b8](https://github.com/T15DigitalMedia/tinker-carpentry/commit/00104b8c2c9f30a19a9a2e384c852cbd58f8ecb8))
+* **order:** handle refunds and cancels ([ea48b7b](https://github.com/T15DigitalMedia/tinker-carpentry/commit/ea48b7bf63db1cc4675eac125ded537b6d134f70))
+* **order:** orders view and reporting ([b2d38e6](https://github.com/T15DigitalMedia/tinker-carpentry/commit/b2d38e6dba8608d58de5d67b3c4a1ce66cda8f8a))
+* **order:** phase 4 orders and fulfillment ([abc4e4a](https://github.com/T15DigitalMedia/tinker-carpentry/commit/abc4e4a4238fcd5a89689534984b1c82fa564b38))
+
 # [1.4.0](https://github.com/T15DigitalMedia/tinker-carpentry/compare/v1.3.0...v1.4.0) (2026-08-05)
 
 
