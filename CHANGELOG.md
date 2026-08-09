@@ -1,3 +1,14 @@
+# [1.7.0](https://github.com/T15DigitalMedia/tinker-carpentry/compare/v1.6.0...v1.7.0) (2026-08-09)
+
+
+### Features
+
+* **coupons:** add admin coupon crud ([00d7fce](https://github.com/T15DigitalMedia/tinker-carpentry/commit/00d7fce6adf7f9c47c453a1f076cb6fa0128e79d))
+* phase 5 reviews coupons merch ([0441c37](https://github.com/T15DigitalMedia/tinker-carpentry/commit/0441c37c2d456dca54b28305b8e3877dc48d2843))
+* **reviews:** add review posting for verified purchases, and admin moderation ([840ab2b](https://github.com/T15DigitalMedia/tinker-carpentry/commit/840ab2b7cb9be08d41e15bbfe3ab3b750a633e3c))
+* **shop:** add admin sales management ([6138a6d](https://github.com/T15DigitalMedia/tinker-carpentry/commit/6138a6df274dcb59afe7c61962acf817824b60f9))
+* **shop:** add popularity sort ([63f36cf](https://github.com/T15DigitalMedia/tinker-carpentry/commit/63f36cfeaaa56c43335f409ff0c0294f47d33411))
+
 # [1.6.0](https://github.com/T15DigitalMedia/tinker-carpentry/compare/v1.5.0...v1.6.0) (2026-08-09)
 
 
