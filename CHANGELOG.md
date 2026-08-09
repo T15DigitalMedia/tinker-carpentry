@@ -1,3 +1,11 @@
+# [1.6.0](https://github.com/T15DigitalMedia/tinker-carpentry/compare/v1.5.0...v1.6.0) (2026-08-09)
+
+
+### Features
+
+* **analytics:** add speed insights ([e6819fb](https://github.com/T15DigitalMedia/tinker-carpentry/commit/e6819fb7bebfad7443b416a0983a6f2273a1f030))
+* **analytics:** add speed insights ([bc42273](https://github.com/T15DigitalMedia/tinker-carpentry/commit/bc422730d301f3e2cc9df63747fe8c5571574d22))
+
 # [1.5.0](https://github.com/T15DigitalMedia/tinker-carpentry/compare/v1.4.0...v1.5.0) (2026-08-09)
 
 
