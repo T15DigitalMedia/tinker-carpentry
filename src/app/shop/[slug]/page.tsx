@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
-import { getProductBySlug, getProductImages, LOW_STOCK_THRESHOLD } from "@/lib/products";
+import { effectiveSalePrice, getProductBySlug, getProductImages, LOW_STOCK_THRESHOLD } from "@/lib/products";
 import { listProductTags } from "@/lib/tags";
 import { getProductImageUrl } from "@/lib/storage";
 import { formatPrice } from "@/lib/currency";
@@ -79,6 +79,7 @@ export default async function ProductDetailPage({
   }));
 
   const stockStatus = getStockStatus(product.stock);
+  const salePrice = effectiveSalePrice(product);
 
   return (
     <Container>
@@ -101,9 +102,9 @@ export default async function ProductDetailPage({
 
             <div className="flex items-baseline gap-3">
               <span className="text-2xl font-medium text-ink">
-                {formatPrice(product.sale_price ?? product.price)}
+                {formatPrice(salePrice ?? product.price)}
               </span>
-              {product.sale_price != null && (
+              {salePrice != null && (
                 <span className="text-lg text-ink-3 line-through">{formatPrice(product.price)}</span>
               )}
             </div>
@@ -131,7 +132,7 @@ export default async function ProductDetailPage({
               slug={product.slug}
               name={product.name}
               price={product.price}
-              salePrice={product.sale_price}
+              salePrice={salePrice}
               imageUrl={gallery[0]?.url}
               stock={product.stock}
               madeToOrder={product.made_to_order}

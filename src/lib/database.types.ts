@@ -18,6 +18,7 @@ export type Database = {
           lead_time_days: number | null;
           weight_g: number | null;
           sales_count: number;
+          sale_expires_at: string | null;
           created_at: string;
           updated_at: string;
         };
@@ -34,6 +35,7 @@ export type Database = {
           lead_time_days?: number | null;
           weight_g?: number | null;
           sales_count?: number;
+          sale_expires_at?: string | null;
         };
         Update: Partial<Database["public"]["Tables"]["products"]["Insert"]>;
         Relationships: [];
@@ -280,6 +282,14 @@ export type Database = {
           p_body: string;
         };
         Returns: { id: string }[];
+      };
+      apply_bulk_sale: {
+        Args: { p_discount_percent: number; p_tag_id: string | null; p_expires_at: string | null };
+        Returns: number;
+      };
+      clear_bulk_sale: {
+        Args: { p_tag_id: string | null };
+        Returns: number;
       };
     };
   };

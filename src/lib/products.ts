@@ -24,6 +24,18 @@ export type StorefrontFilters = {
 type ProductRow = Database["public"]["Tables"]["products"]["Row"];
 type ProductImageRow = Database["public"]["Tables"]["product_images"]["Row"];
 
+// Sitewide/seasonal sales (t5-6) write onto sale_price/sale_expires_at in
+// bulk (see apply_bulk_sale) rather than clearing them when a sale ends —
+// this is the lazy-expiry check, so every customer-facing price read goes
+// through it instead of trusting a possibly-stale sale_price directly.
+// Admin views intentionally read product.sale_price raw, not through this,
+// since the admin needs to see/edit what's actually stored.
+export function effectiveSalePrice(product: Pick<ProductRow, "sale_price" | "sale_expires_at">): number | null {
+  if (product.sale_price == null) return null;
+  if (product.sale_expires_at != null && new Date(product.sale_expires_at) <= new Date()) return null;
+  return product.sale_price;
+}
+
 export type ProductCardData = {
   product: ProductRow;
   imageUrl?: string;
@@ -144,6 +156,16 @@ async function getProductIdsForTagSlug(supabase: SupabaseClient<Database>, tagSl
     .eq("tag_id", tag.id);
   if (error) throw error;
   return data.map((row) => row.product_id);
+}
+
+export async function listProductsOnSale(supabase: SupabaseClient<Database>) {
+  const { data, error } = await supabase
+    .from("products")
+    .select("*")
+    .not("sale_price", "is", null)
+    .order("name", { ascending: true });
+  if (error) throw error;
+  return data;
 }
 
 export async function getProductsByIds(supabase: SupabaseClient<Database>, productIds: string[]) {

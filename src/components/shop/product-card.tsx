@@ -1,6 +1,7 @@
 import Image from "next/image";
 import Link from "next/link";
 import { formatPrice } from "@/lib/currency";
+import { effectiveSalePrice } from "@/lib/products";
 import type { Database } from "@/lib/database.types";
 
 type Product = Database["public"]["Tables"]["products"]["Row"];
@@ -17,6 +18,7 @@ export function ProductCard({
   eagerLoad?: boolean;
 }) {
   const outOfStock = product.stock <= 0 && !product.made_to_order;
+  const salePrice = effectiveSalePrice(product);
 
   return (
     <Link
@@ -47,8 +49,8 @@ export function ProductCard({
       <div className="flex flex-1 flex-col gap-1.5 p-5">
         <h3 className="font-serif text-lg font-medium text-ink">{product.name}</h3>
         <div className="mt-auto flex items-baseline gap-2">
-          <span className="font-medium text-ink">{formatPrice(product.sale_price ?? product.price)}</span>
-          {product.sale_price != null && (
+          <span className="font-medium text-ink">{formatPrice(salePrice ?? product.price)}</span>
+          {salePrice != null && (
             <span className="text-sm text-ink-3 line-through">{formatPrice(product.price)}</span>
           )}
         </div>
