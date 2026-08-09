@@ -17,6 +17,7 @@ export type Database = {
           made_to_order: boolean;
           lead_time_days: number | null;
           weight_g: number | null;
+          sales_count: number;
           created_at: string;
           updated_at: string;
         };
@@ -32,6 +33,7 @@ export type Database = {
           made_to_order?: boolean;
           lead_time_days?: number | null;
           weight_g?: number | null;
+          sales_count?: number;
         };
         Update: Partial<Database["public"]["Tables"]["products"]["Insert"]>;
         Relationships: [];

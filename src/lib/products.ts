@@ -7,8 +7,11 @@ export const STOREFRONT_PAGE_SIZE = 12;
 
 export type ProductSort = "name" | "price" | "stock";
 
-// "newest" stands in for popularity until Phase 5 adds a real sales-count metric (see t5-5).
-export type StorefrontSort = "name" | "price" | "newest";
+// "newest" (by created_at) powers the homepage's "New arrivals" section
+// (src/app/page.tsx) — a genuinely recency-based listing, not a stand-in.
+// "popularity" (by sales_count, see t5-5) is what the shop page's sort
+// dropdown offers shoppers instead.
+export type StorefrontSort = "name" | "price" | "newest" | "popularity";
 
 export type StorefrontFilters = {
   search?: string;
@@ -72,6 +75,9 @@ export async function listStorefrontProducts(
   switch (sort) {
     case "price":
       query = query.order("price", { ascending: true }).order("id", { ascending: true });
+      break;
+    case "popularity":
+      query = query.order("sales_count", { ascending: false }).order("id", { ascending: true });
       break;
     case "newest":
       query = query.order("created_at", { ascending: false }).order("id", { ascending: true });

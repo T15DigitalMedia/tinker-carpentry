@@ -23,7 +23,7 @@ type ShopSearchParams = {
 const sortLinks: { label: string; value: StorefrontSort }[] = [
   { label: "Name", value: "name" },
   { label: "Price", value: "price" },
-  { label: "Newest", value: "newest" },
+  { label: "Popularity", value: "popularity" },
 ];
 
 const inputClass =
