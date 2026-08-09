@@ -9,6 +9,9 @@ const adminNavLinks = [
   { href: "/admin/orders", label: "Orders" },
   { href: "/admin/products", label: "Products" },
   { href: "/admin/tags", label: "Tags" },
+  { href: "/admin/coupons", label: "Coupons" },
+  { href: "/admin/sales", label: "Sales" },
+  { href: "/admin/reviews", label: "Reviews" },
   { href: "/admin/reports", label: "Reports" },
 ];
 

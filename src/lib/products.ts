@@ -7,8 +7,11 @@ export const STOREFRONT_PAGE_SIZE = 12;
 
 export type ProductSort = "name" | "price" | "stock";
 
-// "newest" stands in for popularity until Phase 5 adds a real sales-count metric (see t5-5).
-export type StorefrontSort = "name" | "price" | "newest";
+// "newest" (by created_at) powers the homepage's "New arrivals" section
+// (src/app/page.tsx) — a genuinely recency-based listing, not a stand-in.
+// "popularity" (by sales_count, see t5-5) is what the shop page's sort
+// dropdown offers shoppers instead.
+export type StorefrontSort = "name" | "price" | "newest" | "popularity";
 
 export type StorefrontFilters = {
   search?: string;
@@ -20,6 +23,18 @@ export type StorefrontFilters = {
 
 type ProductRow = Database["public"]["Tables"]["products"]["Row"];
 type ProductImageRow = Database["public"]["Tables"]["product_images"]["Row"];
+
+// Sitewide/seasonal sales (t5-6) write onto sale_price/sale_expires_at in
+// bulk (see apply_bulk_sale) rather than clearing them when a sale ends —
+// this is the lazy-expiry check, so every customer-facing price read goes
+// through it instead of trusting a possibly-stale sale_price directly.
+// Admin views intentionally read product.sale_price raw, not through this,
+// since the admin needs to see/edit what's actually stored.
+export function effectiveSalePrice(product: Pick<ProductRow, "sale_price" | "sale_expires_at">): number | null {
+  if (product.sale_price == null) return null;
+  if (product.sale_expires_at != null && new Date(product.sale_expires_at) <= new Date()) return null;
+  return product.sale_price;
+}
 
 export type ProductCardData = {
   product: ProductRow;
@@ -72,6 +87,9 @@ export async function listStorefrontProducts(
   switch (sort) {
     case "price":
       query = query.order("price", { ascending: true }).order("id", { ascending: true });
+      break;
+    case "popularity":
+      query = query.order("sales_count", { ascending: false }).order("id", { ascending: true });
       break;
     case "newest":
       query = query.order("created_at", { ascending: false }).order("id", { ascending: true });
@@ -138,6 +156,16 @@ async function getProductIdsForTagSlug(supabase: SupabaseClient<Database>, tagSl
     .eq("tag_id", tag.id);
   if (error) throw error;
   return data.map((row) => row.product_id);
+}
+
+export async function listProductsOnSale(supabase: SupabaseClient<Database>) {
+  const { data, error } = await supabase
+    .from("products")
+    .select("*")
+    .not("sale_price", "is", null)
+    .order("name", { ascending: true });
+  if (error) throw error;
+  return data;
 }
 
 export async function getProductsByIds(supabase: SupabaseClient<Database>, productIds: string[]) {

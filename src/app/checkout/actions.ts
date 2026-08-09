@@ -2,7 +2,7 @@
 
 import type Stripe from "stripe";
 import { createClient } from "@/lib/supabase/server";
-import { getProductsByIds } from "@/lib/products";
+import { effectiveSalePrice, getProductsByIds } from "@/lib/products";
 import { validateCoupon } from "@/lib/coupons";
 import { checkoutInputSchema, type CheckoutInput } from "@/lib/validation/checkout";
 import { stripe } from "@/lib/stripe";
@@ -39,7 +39,7 @@ export async function createCheckoutSession(input: CheckoutInput): Promise<Creat
       return { ok: false, error: `Only ${product.stock} of "${product.name}" left in stock.` };
     }
 
-    const unitAmount = product.sale_price ?? product.price;
+    const unitAmount = effectiveSalePrice(product) ?? product.price;
     subtotal += unitAmount * quantity;
 
     lineItems.push({
