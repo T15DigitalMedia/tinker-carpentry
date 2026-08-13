@@ -1,3 +1,11 @@
+# [1.8.0](https://github.com/T15DigitalMedia/tinker-carpentry/compare/v1.7.0...v1.8.0) (2026-08-13)
+
+
+### Features
+
+* **public:** add all required public pages with placeholder content ([99ebddc](https://github.com/T15DigitalMedia/tinker-carpentry/commit/99ebddcfd20f36aa5e1b61f8a1973d9c7cf18e5f))
+* **public:** add all required public pages with placeholder content ([ac5af6b](https://github.com/T15DigitalMedia/tinker-carpentry/commit/ac5af6b424fcf87c623dfda90ec2e6153fcea9a1))
+
 # [1.7.0](https://github.com/T15DigitalMedia/tinker-carpentry/compare/v1.6.0...v1.7.0) (2026-08-09)
 
 
